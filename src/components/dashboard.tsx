@@ -1,17 +1,19 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Database, Code, Wand2, Users, BotMessageSquare, Settings, Fish } from 'lucide-react';
+import { Database, Code, Wand2, Users, BotMessageSquare, Settings, Fish, Waves } from 'lucide-react';
 import { useState } from 'react';
 import { AISummarizer } from './ai-summarizer';
 import { DatasetTables } from './dataset-tables';
 import { WhaleWatch } from './whale-watch';
+import { HyperliquidTracker } from './hyperliquid-tracker';
 
 const navItems = [
   { name: 'Raw Data', icon: Database, view: 'raw' },
   { name: 'Decoded Projects', icon: Code, view: 'decoded' },
   { name: 'Spells', icon: Wand2, view: 'spells' },
   { name: 'Whale Watch', icon: Fish, view: 'whale' },
+  { name: 'Hyperliquid', icon: Waves, view: 'hyperliquid' },
   { name: 'Community', icon: Users, view: 'community' },
 ];
 
@@ -68,6 +70,13 @@ export function Dashboard() {
             </div>
 
             <div className="space-y-12">
+              <section id="hyperliquid-tracker">
+                 <h2 className="text-2xl font-headline font-semibold tracking-tight mb-4 flex items-center gap-2">
+                   <Waves className="w-6 h-6 text-accent"/> Hyperliquid Whale Tracker
+                 </h2>
+                 <HyperliquidTracker />
+              </section>
+
               <section id="whale-watch">
                  <h2 className="text-2xl font-headline font-semibold tracking-tight mb-4 flex items-center gap-2">
                    <Fish className="w-6 h-6 text-accent"/> Whale Watch
