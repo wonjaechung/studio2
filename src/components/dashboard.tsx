@@ -2,7 +2,7 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare, Users, Waves } from 'lucide-react';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare, Users, Waves, Newspaper } from 'lucide-react';
 import { useState } from 'react';
 import { Guide } from './guide';
 import { LiquidationTracker } from './liquidation-tracker';
@@ -86,7 +86,7 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
       case 'guide':
         return <Guide lang={lang} />;
       case 'leaderboard':
-        return <Leaderboard />;
+        return <Leaderboard lang={lang}/>;
       case 'liquidations':
         return <LiquidationTracker />;
       case 'hyperliquid':
@@ -110,8 +110,8 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
         <Sidebar className="hidden lg:flex flex-col">
           <SidebarHeader>
              <a href="#" className="flex items-center space-x-2">
-                <GanttChartSquare className="h-8 w-8 text-accent" />
-                <span className="font-bold font-logo text-2xl tracking-wider">TradeOS</span>
+                <GanttChartSquare className="h-10 w-10 text-accent" />
+                <span className="font-bold font-logo text-3xl tracking-wider">TradeOS</span>
             </a>
           </SidebarHeader>
           <SidebarContent className="flex-1">
@@ -123,8 +123,8 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
                     isActive={activeView === item.view}
                     size="lg"
                   >
-                    <item.icon className="w-5 h-5" />
-                    {item.name}
+                    <item.icon className="w-6 h-6" />
+                    <span className="text-base">{item.name}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

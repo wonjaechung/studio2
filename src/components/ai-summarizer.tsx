@@ -6,8 +6,9 @@ import { summarizeBlockchainData } from '@/ai/flows/summarize-blockchain-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { BrainCircuit, Loader2 } from 'lucide-react';
+import { BrainCircuit, Loader2, Search, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from './ui/input';
 
 export function AISummarizer() {
   const [rawData, setRawData] = useState('');
@@ -84,7 +85,7 @@ export function AISummarizer() {
             <form onSubmit={(e) => { e.preventDefault(); handleSubmit(rawData); }} className="flex flex-col gap-4">
                 <Textarea
                 placeholder="Paste raw data here..."
-                className="min-h-[150px] font-code text-xs bg-black/20"
+                className="min-h-[120px] font-code text-xs bg-black/20"
                 value={rawData}
                 onChange={(e) => setRawData(e.target.value)}
                 />
@@ -107,6 +108,41 @@ export function AISummarizer() {
                     )}
                 </Button>
                 </div>
+            </form>
+            </CardContent>
+        </Card>
+
+        <Card className="bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+            <CardTitle className="flex items-center gap-2 font-headline">
+                Visualize Dune
+            </CardTitle>
+            <CardDescription>
+                Use natural language to query Dune Analytics and visualize the results.
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
+                <div className="relative">
+                    <Input
+                    placeholder="e.g., 'Show me the daily active users on Hyperliquid in the last 30 days'"
+                    className="pr-10"
+                    />
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                </div>
+                 <Button type="submit" disabled={isReportLoading} className="bg-accent hover:bg-accent/80 text-accent-foreground self-end">
+                    {isReportLoading ? (
+                    <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                    </>
+                    ) : (
+                       <>
+                        <Wand2 className="mr-2 h-4 w-4" />
+                        Visualize
+                       </>
+                    )}
+                </Button>
             </form>
             </CardContent>
         </Card>
@@ -143,7 +179,7 @@ export function AISummarizer() {
         </Card>
       </div>
 
-      <Card className="min-h-[550px] bg-card/50 backdrop-blur-sm flex flex-col sticky top-24">
+      <Card className="min-h-[700px] bg-card/50 backdrop-blur-sm flex flex-col sticky top-24">
         <CardHeader>
           <CardTitle className="font-headline">AI Analysis</CardTitle>
           <CardDescription>The AI-generated summary or report will appear below.</CardDescription>

@@ -2,8 +2,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Activity, Gamepad2, Swords, Trophy, Users, Video, SlidersHorizontal, BarChart2, DollarSign, Bitcoin, Waves, Info, Newspaper } from 'lucide-react';
+import { Activity, Gamepad2, Swords, Trophy, Users, Video, SlidersHorizontal, BarChart2, DollarSign, Bitcoin, Waves, Info, Newspaper, BookOpen } from 'lucide-react';
 import { Separator } from './ui/separator';
+import { VolatilityGauge } from './volatility-gauge';
 
 const content = {
   en: {
@@ -110,15 +111,22 @@ export function Guide({ lang }: { lang: 'en' | 'ko' }) {
                     </Card>
                 ))}
             </div>
-             <div className="space-y-8">
+            <div className="space-y-8">
+                 <Card className="bg-card/50 backdrop-blur-sm border-dashed p-6">
+                    <h3 className="font-headline text-2xl mb-4 text-accent flex items-center gap-2">
+                      <BookOpen className="w-6 h-6" />
+                      {currentContent.whitePaper}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">Read our white paper to get a deep-dive on the protocol and the vision.</p>
+                     <Button>Read White Paper</Button>
+                </Card>
                 <Card className="bg-card/50 backdrop-blur-sm border-dashed p-6">
                     <h3 className="font-headline text-2xl mb-4 text-accent flex items-center gap-2">
                       <Newspaper className="w-6 h-6" />
                       {currentContent.announcementsTitle}
                     </h3>
                     <ul className="space-y-3 text-muted-foreground">
-                        <li className="hover:text-foreground cursor-pointer font-semibold text-foreground/90">[White Paper] TradeOS Protocol v1.2</li>
-                        <li className="hover:text-foreground cursor-pointer">[Update] v1.2 Patch Notes - New MMR calculation</li>
+                        <li className="hover:text-foreground cursor-pointer font-semibold text-foreground/90">[Update] v1.2 Patch Notes - New MMR calculation</li>
                         <li className="hover:text-foreground cursor-pointer">[API] How to connect to the MCP API</li>
                         <li className="hover:text-foreground cursor-pointer">[Event] Season 3 start date announced!</li>
                         <li className="hover:text-foreground cursor-pointer">[System] Scheduled maintenance on 2024-08-01</li>
@@ -129,17 +137,15 @@ export function Guide({ lang }: { lang: 'en' | 'ko' }) {
 
         <Separator className="my-16" />
         
-        <div className="space-y-8">
-            <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="space-y-4">
                  <h2 className="text-4xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-accent to-purple-400 mb-4">
                     {currentContent.gaugeTitle}
                 </h2>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl">
                     {currentContent.gaugeDescription}
                 </p>
-            </div>
-            <div>
-                <Card className="bg-card/50 backdrop-blur-sm p-6 max-w-2xl">
+                 <Card className="bg-card/50 backdrop-blur-sm p-6 max-w-2xl">
                    <h3 className="font-headline text-2xl mb-4 text-accent">{currentContent.logicTitle}</h3>
                    <p className="text-muted-foreground mb-6">
                         {currentContent.logicDescription}
@@ -155,6 +161,9 @@ export function Guide({ lang }: { lang: 'en' | 'ko' }) {
                         ))}
                    </div>
                 </Card>
+            </div>
+            <div className="mt-12 md:mt-0">
+                <VolatilityGauge lang={lang} />
             </div>
         </div>
     </section>
