@@ -52,7 +52,7 @@ const messages = [
 
 export function CommunityChat() {
   return (
-    <Card className="w-full h-[70vh] flex flex-col bg-card/50 backdrop-blur-sm border-dashed">
+    <Card className="w-full h-full flex flex-col bg-card/50 backdrop-blur-sm border-dashed">
       <CardHeader>
         <CardTitle className="font-headline">Live Community Chat</CardTitle>
       </CardHeader>

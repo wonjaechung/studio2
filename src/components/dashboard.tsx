@@ -24,7 +24,6 @@ const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '고래 추적' : 'Whale Watch', icon: Users, view: 'whale' },
   { name: lang === 'ko' ? 'AI 분석' : 'AI Analysis', icon: BotMessageSquare, view: 'ai' },
   { name: lang === 'ko' ? '데이터셋' : 'Datasets', icon: Database, view: 'data' },
-  { name: lang === 'ko' ? '커뮤니티' : 'Community', icon: Users, view: 'community' },
 ];
 
 const content = {
@@ -59,12 +58,13 @@ export function Dashboard() {
     switch (activeView) {
       case 'ranked':
         return (
-           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2">
+           <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="xl:col-span-3">
                <TradingViewChart />
             </div>
-            <div className="xl:col-span-1">
+            <div className="xl:col-span-1 space-y-6">
               <VolatilityGauge lang={language} />
+              <CommunityChat />
             </div>
           </div>
         );
@@ -80,8 +80,6 @@ export function Dashboard() {
         return <AISummarizer />;
       case 'data':
         return <DatasetTables />;
-      case 'community':
-        return <CommunityChat />;
       default:
         return (
           <div className="flex items-center justify-center h-96">
