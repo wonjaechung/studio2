@@ -10,8 +10,6 @@ import { HyperliquidTracker } from './hyperliquid-tracker';
 import { WhaleWatch } from './whale-watch';
 import { AISummarizer } from './ai-summarizer';
 import { DatasetTables } from './dataset-tables';
-import { Button } from './ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { TradingViewChart } from './trading-view-chart';
 import { CommunityChat } from './community-chat';
 import { NormalModeBoard } from './normal-mode-board';
@@ -43,18 +41,8 @@ const content = {
   }
 }
 
-export function Dashboard() {
+export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
   const [activeView, setActiveView] = useState('ranked');
-  const [language, setLanguage] = useState<'en' | 'ko'>('ko');
-  const { toast } = useToast();
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ko' : 'en');
-    toast({
-        title: language === 'en' ? '언어 변경' : 'Language Changed',
-        description: language === 'en' ? '이제 한국어로 표시됩니다.' : 'Now displaying in English.',
-    });
-  }
 
   const renderContent = () => {
     switch (activeView) {
@@ -65,15 +53,15 @@ export function Dashboard() {
                <TradingViewChart />
             </div>
             <div className="xl:col-span-1 space-y-6">
-              <VolatilityGauge lang={language} />
+              <VolatilityGauge lang={lang} />
               <CommunityChat />
             </div>
           </div>
         );
       case 'normal':
-        return <NormalModeBoard lang={language} />;
+        return <NormalModeBoard lang={lang} />;
       case 'guide':
-        return <Guide lang={language} />;
+        return <Guide lang={lang} />;
       case 'liquidations':
         return <LiquidationTracker />;
       case 'hyperliquid':
@@ -87,7 +75,7 @@ export function Dashboard() {
       default:
         return (
           <div className="flex items-center justify-center h-96">
-            <p className="text-muted-foreground">{content[language].comingSoon(navItems(language).find(item => item.view === activeView)?.name || '')}</p>
+            <p className="text-muted-foreground">{content[lang].comingSoon(navItems(lang).find(item => item.view === activeView)?.name || '')}</p>
           </div>
         );
     }
@@ -102,7 +90,7 @@ export function Dashboard() {
           </SidebarHeader>
           <SidebarContent className="flex-1">
             <SidebarMenu>
-              {navItems(language).map((item) => (
+              {navItems(lang).map((item) => (
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton
                     onClick={() => setActiveView(item.view)}
@@ -120,7 +108,7 @@ export function Dashboard() {
                <SidebarMenuItem>
                 <SidebarMenuButton>
                     <Settings className="w-5 h-5" />
-                    {content[language].settings}
+                    {content[lang].settings}
                 </SidebarMenuButton>
                </SidebarMenuItem>
              </SidebarMenu>
@@ -128,21 +116,16 @@ export function Dashboard() {
         </Sidebar>
         <SidebarInset>
           <main className="p-4 sm:p-6 lg:p-8">
-            <div className="flex items-center justify-between mb-8">
+             <div className="flex items-center justify-between mb-8">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-accent to-blue-400">
-                  {content[language].title}
+                  {content[lang].title}
                 </h1>
                 <p className="mt-2 text-lg text-muted-foreground font-body">
-                  {content[language].subtitle}
+                  {content[lang].subtitle}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                 <Button variant="ghost" size="icon" onClick={toggleLanguage}>
-                    <Languages className="w-6 h-6" />
-                 </Button>
-                 <SidebarTrigger className="lg:hidden" />
-              </div>
+                <SidebarTrigger className="lg:hidden" />
             </div>
 
             <div className="space-y-12">

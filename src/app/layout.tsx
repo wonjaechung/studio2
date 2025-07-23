@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Header } from '@/components/layout/header';
 import { Toaster } from '@/components/ui/toaster';
+import { SiteHeader } from '@/components/layout/site-header';
 
 export const metadata: Metadata = {
   title: 'TradeOS - The e-Sports League for Traders',
@@ -22,7 +22,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
         <div className="relative flex min-h-screen flex-col">
-          <Header />
+          <SiteHeader />
           <div className="flex-1">{children}</div>
         </div>
         <Toaster />

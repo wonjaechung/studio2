@@ -1,12 +1,10 @@
-
 'use client';
 
-import { GanttChartSquare, LogIn } from 'lucide-react';
+import { GanttChartSquare, Languages, LogIn, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { AuthModal } from '../auth-modal';
 import { useState } from 'react';
-import { User } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { useToast } from '@/hooks/use-toast';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const UserNav = () => {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -53,9 +53,24 @@ const UserNav = () => {
         </>
 }
 
+export function SiteHeader() {
+  const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentLang = searchParams.get('lang') || 'ko';
 
-import { Avatar, AvatarFallback } from '../ui/avatar';
-export function Header() {
+  const toggleLanguage = () => {
+    const newLang = currentLang === 'en' ? 'ko' : 'en';
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set('lang', newLang);
+    router.replace(`${pathname}?${newSearchParams.toString()}`);
+    
+    toast({
+        title: newLang === 'ko' ? '언어 변경' : 'Language Changed',
+        description: newLang === 'ko' ? '이제 한국어로 표시됩니다.' : 'Now displaying in English.',
+    });
+  }
 
   return (
     <>
@@ -66,7 +81,10 @@ export function Header() {
             <span className="font-bold font-logo text-lg tracking-wider">TradeOS</span>
           </Link>
           <div className="flex flex-1 items-center justify-end space-x-2">
-           <UserNav />
+            <Button variant="ghost" size="icon" onClick={toggleLanguage}>
+                <Languages className="w-6 h-6" />
+            </Button>
+            <UserNav />
           </div>
         </div>
       </header>
