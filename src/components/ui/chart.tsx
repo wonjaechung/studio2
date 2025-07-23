@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -57,6 +58,20 @@ const ChartContainer = React.forwardRef<
         )}
         {...props}
       >
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+[data-chart=${chartId}] {
+  --color-red: hsl(0 62.8% 50.6%);
+  --color-green: hsl(142.1 76.2% 36.3%);
+}
+.dark [data-chart=${chartId}] {
+  --color-red: hsl(0 62.8% 40.6%);
+  --color-green: hsl(142.1 76.2% 26.3%);
+}
+`,
+          }}
+        />
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer>
           {children}
@@ -363,3 +378,5 @@ export {
   ChartLegendContent,
   ChartStyle,
 }
+
+    

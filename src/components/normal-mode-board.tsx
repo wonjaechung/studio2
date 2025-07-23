@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
@@ -7,6 +8,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Search, PenSquare, MessageSquare, TrendingUp, Newspaper, Heart, Flame, Pin } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { useState } from 'react';
+import { PlayerProfile } from './player-profile';
 
 const content = {
     en: {
@@ -48,13 +51,13 @@ const content = {
 }
 
 const posts = [
-  { id: 1, category: '자유', title: '이번 FOMC 어떻게들 보시나요?', author: '경제신동', date: '2023.10.28', views: 1024, comments: 23, hearts: 15, fires: 3 },
-  { id: 2, category: '분석', title: 'BTC 단기 저항선 분석과 대응 전략', author: '차트도사', date: '2023.10.28', views: 2345, comments: 45, hearts: 128, fires: 40 },
-  { id: 3, category: '질문', title: '레버리지 처음 써보는데 팁 좀 부탁드립니다', author: '코린이', date: '2023.10.27', views: 512, comments: 12, hearts: 5, fires: 1 },
-  { id: 4, category: '정보', title: '[공유] 유용한 온체인 데이터 분석 사이트 모음', author: '데이터콜렉터', date: '2023.10.27', views: 5421, comments: 88, hearts: 256, fires: 60 },
-  { id: 5, category: '기타', title: '다들 주말에 뭐하시나요?', author: '주말요정', date: '2023.10.26', views: 234, comments: 5, hearts: 3, fires: 0 },
-  { id: 6, category: '분석', title: '솔라나 생태계, 다음 10배 밈코인은?', author: '알트고수', date: '2023.10.25', views: 8910, comments: 156, hearts: 450, fires: 121 },
-  { id: 7, category: '자유', title: '이번 시즌 챌린저 목표로 달립니다', author: '성투가즈아', date: '2023.10.25', views: 456, comments: 33, hearts: 42, fires: 11 },
+  { id: 1, category: '자유', title: '이번 FOMC 어떻게들 보시나요?', author: '경제신동', date: '2023.10.28', views: 1024, comments: 23, hearts: 15, fires: 3, address: '0x5b5d51203a0f9079f8aeb098a6523a13f298c060'},
+  { id: 2, category: '분석', title: 'BTC 단기 저항선 분석과 대응 전략', author: '차트도사', date: '2023.10.28', views: 2345, comments: 45, hearts: 128, fires: 40, address: '0x1234...5678' },
+  { id: 3, category: '질문', title: '레버리지 처음 써보는데 팁 좀 부탁드립니다', author: '코린이', date: '2023.10.27', views: 512, comments: 12, hearts: 5, fires: 1, address: '0xabcd...efgh' },
+  { id: 4, category: '정보', title: '[공유] 유용한 온체인 데이터 분석 사이트 모음', author: '데이터콜렉터', date: '2023.10.27', views: 5421, comments: 88, hearts: 256, fires: 60, address: '0x9876...5432' },
+  { id: 5, category: '기타', title: '다들 주말에 뭐하시나요?', author: '주말요정', date: '2023.10.26', views: 234, comments: 5, hearts: 3, fires: 0, address: '0xcafe...babe' },
+  { id: 6, category: '분석', title: '솔라나 생태계, 다음 10배 밈코인은?', author: '알트고수', date: '2023.10.25', views: 8910, comments: 156, hearts: 450, fires: 121, address: '0xfeed...face' },
+  { id: 7, category: '자유', title: '이번 시즌 챌린저 목표로 달립니다', author: '성투가즈아', date: '2023.10.25', views: 456, comments: 33, hearts: 42, fires: 11, address: '0xdead...beef' },
 ];
 
 const popularSearches = {
@@ -78,6 +81,8 @@ const newsItems = {
 };
 
 export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
+    const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+
     const currentContent = content[lang];
     const currentPosts = posts.map(p => ({
         ...p,
@@ -87,7 +92,17 @@ export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
     const currentNews = newsItems[lang];
 
     const popularPosts = [...currentPosts].sort((a, b) => (b.hearts + b.fires) - (a.hearts + a.fires)).slice(0, 3);
-
+    
+    if (selectedAddress) {
+        return (
+            <div>
+                <Button onClick={() => setSelectedAddress(null)} className="mb-4">
+                    &larr; {lang === 'ko' ? '게시판으로 돌아가기' : 'Back to Board'}
+                </Button>
+                <PlayerProfile />
+            </div>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -106,7 +121,7 @@ export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
                             </h3>
                             <div className="space-y-3">
                                 {popularPosts.map(post => (
-                                    <div key={post.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer">
+                                    <div key={post.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer" onClick={() => setSelectedAddress(post.address)}>
                                         <div className="flex items-center gap-3">
                                             <Badge variant="outline" className="border-accent/50 text-accent">{post.category}</Badge>
                                             <span className="font-medium">{post.title}</span>
@@ -156,7 +171,7 @@ export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
                                 </TableHeader>
                                 <TableBody>
                                     {currentPosts.map((post) => (
-                                        <TableRow key={post.id} className="hover:bg-accent/10 cursor-pointer">
+                                        <TableRow key={post.id} className="hover:bg-accent/10 cursor-pointer" onClick={() => setSelectedAddress(post.address)}>
                                             <TableCell className="text-center">
                                                 <Badge variant="outline" className="border-accent/50 text-accent">{post.category}</Badge>
                                             </TableCell>
