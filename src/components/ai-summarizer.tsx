@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -83,7 +84,7 @@ export function AISummarizer() {
             <form onSubmit={(e) => { e.preventDefault(); handleSubmit(rawData); }} className="flex flex-col gap-4">
                 <Textarea
                 placeholder="Paste raw data here..."
-                className="min-h-[200px] font-code text-xs bg-black/20"
+                className="min-h-[150px] font-code text-xs bg-black/20"
                 value={rawData}
                 onChange={(e) => setRawData(e.target.value)}
                 />
@@ -123,7 +124,7 @@ export function AISummarizer() {
             <form onSubmit={handleCustomReportSubmit} className="flex flex-col gap-4">
                 <Textarea
                 placeholder="E.g., 'Analyze the impact of the recent BTC ETF approval on ETH volatility...'"
-                className="min-h-[150px] font-body text-sm bg-black/20"
+                className="min-h-[120px] font-body text-sm bg-black/20"
                 value={customReport}
                 onChange={(e) => setCustomReport(e.target.value)}
                 />
@@ -142,7 +143,7 @@ export function AISummarizer() {
         </Card>
       </div>
 
-      <Card className="min-h-[422px] bg-card/50 backdrop-blur-sm flex flex-col sticky top-24">
+      <Card className="min-h-[550px] bg-card/50 backdrop-blur-sm flex flex-col sticky top-24">
         <CardHeader>
           <CardTitle className="font-headline">AI Analysis</CardTitle>
           <CardDescription>The AI-generated summary or report will appear below.</CardDescription>

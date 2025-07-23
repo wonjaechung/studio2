@@ -1,49 +1,29 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 import { PlayerProfile } from './player-profile';
+import { Crown, Shield, Users } from 'lucide-react';
+import { Badge } from './ui/badge';
 
-const leaderboardData = [
-  { rank: 1, name: 'frieza', exchange: 'Binance', profit: '2,587.35%', avatar: 'https://placehold.co/40x40/7E57C2/FFFFFF', address: '0x123...abc' },
-  { rank: 2, name: 'affordably_Grandma', exchange: 'OKX', profit: '2,111.35%', avatar: 'https://placehold.co/40x40/5C6BC0/FFFFFF', address: '0x456...def' },
-  { rank: 3, name: 'Vegeta', exchange: 'Binance', profit: '1,520.84%', avatar: 'https://placehold.co/40x40/42A5F5/FFFFFF', address: '0x789...ghi' },
-  { rank: 4, name: 'ninilucky', exchange: 'Binance', profit: '1,445.91%', avatar: 'https://placehold.co/40x40/29B6F6/FFFFFF', address: '0xabc...123' },
-  { rank: 5, name: 'kelly9', exchange: 'Binance', profit: '1,280.77%', avatar: 'https://placehold.co/40x40/26C6DA/FFFFFF', address: '0xdef...456' },
-  { rank: 6, name: 'Reboot', exchange: 'Binance', profit: '1,242.49%', avatar: 'https://placehold.co/40x40/26A69A/FFFFFF', address: '0xghi...789' },
-  { rank: 7, name: 'dunny', exchange: 'BitMEX', profit: '1,017.45%', avatar: 'https://placehold.co/40x40/66BB6A/FFFFFF', address: '0xshd...281' },
-  { rank: 8, name: 'happyending', exchange: 'OKX', profit: '890.84%', avatar: 'https://placehold.co/40x40/9CCC65/FFFFFF', address: '0xapd...134' },
-  { rank: 9, name: 'revive_MTA', exchange: 'Bybit', profit: '881.78%', avatar: 'https://placehold.co/40x40/D4E157/FFFFFF', address: '0x153...aef' },
-  { rank: 10, name: 'Lu111', exchange: 'Bitget', profit: '795.81%', avatar: 'https://placehold.co/40x40/FFEE58/FFFFFF', address: '0x213...ffa' },
+const rankedData = [
+  { rank: 1, name: 'Gen.G Esports', league: 'LCK', points: 1617, record: '28-4 (.875)', avatar: 'https://placehold.co/40x40/FFD700/000000', dataAiHint: 'esports logo GenG' },
+  { rank: 2, name: 'T1', league: 'LCK', points: 1561, record: '21-11 (.656)', avatar: 'https://placehold.co/40x40/E5002B/FFFFFF', dataAiHint: 'esports logo T1' },
+  { rank: 3, name: 'Anyone\'s Legend', league: 'LPL', points: 1558, record: '30-9 (.769)', avatar: 'https://placehold.co/40x40/333333/FFFFFF', dataAiHint: 'esports logo AL' },
+  { rank: 4, name: 'Hanwha Life Esports', league: 'LCK', points: 1555, record: '28-8 (.778)', avatar: 'https://placehold.co/40x40/FF6B00/FFFFFF', dataAiHint: 'esports logo HLE' },
+  { rank: 5, name: 'BILIBILI GAMING', league: 'LPL', points: 1492, record: '28-13 (.683)', avatar: 'https://placehold.co/40x40/00A1F1/FFFFFF', dataAiHint: 'esports logo BLG' },
 ];
 
-const Chart = ({ data }: { data: number[] }) => (
-  <div className="w-24 h-8">
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={data.map(v => ({ value: v }))}>
-        <defs>
-          <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.4} />
-            <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Area
-          type="monotone"
-          dataKey="value"
-          stroke="hsl(var(--accent))"
-          fill="url(#chart-gradient)"
-          strokeWidth={2}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  </div>
-);
-
+const normalData = [
+    { rank: 1, name: 'CryptoKing', profit: '+1,254.3%', address: '0xabc...def', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'king crown' },
+    { rank: 2, name: 'WhaleWatcher', profit: '+987.1%', address: '0x123...456', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'whale ocean' },
+    { rank: 3, name: 'DiamondHands', profit: '+850.5%', address: '0x789...abc', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'diamond hands' },
+]
 
 export function Leaderboard() {
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
@@ -60,54 +40,130 @@ export function Leaderboard() {
   }
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="font-headline">Main Leaderboard</CardTitle>
-        <div className="flex items-center justify-between">
-            <Tabs defaultValue="main">
+    <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+      <div className="xl:col-span-3">
+         <Tabs defaultValue="ranked">
+            <div className="flex justify-between items-center mb-4">
                 <TabsList>
-                    <TabsTrigger value="main">Main Leaderboard</TabsTrigger>
-                    <TabsTrigger value="copy">Copy Leaders</TabsTrigger>
-                    <TabsTrigger value="league">League</TabsTrigger>
+                    <TabsTrigger value="ranked">Ranked Mode</TabsTrigger>
+                    <TabsTrigger value="normal">Normal Mode</TabsTrigger>
+                    <TabsTrigger value="teams">Teams</TabsTrigger>
                 </TabsList>
-            </Tabs>
-            <Button variant="outline" className="bg-accent/20 border-accent/50 text-accent-foreground">Pay to See Rewards Help</Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-16">Rank</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Exchange</TableHead>
-              <TableHead className="text-right">Profit</TableHead>
-              <TableHead className="w-32 text-center">Chart</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {leaderboardData.map((player) => (
-              <TableRow key={player.rank} className="cursor-pointer hover:bg-muted/30" onClick={() => setSelectedAddress(player.address)}>
-                <TableCell className="font-medium text-center">{player.rank}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={player.avatar} />
-                      <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium">{player.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-muted-foreground">{player.exchange}</TableCell>
-                <TableCell className="text-right font-medium text-green-400">{player.profit}</TableCell>
-                <TableCell>
-                  <Chart data={[10, 20, 15, 30, 25, 45, 40]}/>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                <Button>Create a Team</Button>
+            </div>
+            <TabsContent value="ranked">
+                <Card className="bg-card/50 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="font-headline">Global Power Rankings</CardTitle>
+                    <CardDescription>Powered by TradeOS AI Engine. Updated: 2024-07-23 03:00</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead className="w-16 text-center">#</TableHead>
+                        <TableHead>Team</TableHead>
+                        <TableHead className="text-right">Points</TableHead>
+                        <TableHead className="text-center">W/L</TableHead>
+                        <TableHead className="text-center">International</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {rankedData.map((player) => (
+                        <TableRow key={player.rank} className="cursor-pointer hover:bg-muted/30" onClick={() => {}}>
+                            <TableCell className="font-bold text-lg text-center">{player.rank}</TableCell>
+                            <TableCell>
+                            <div className="flex items-center gap-3">
+                                <Avatar className="w-8 h-8">
+                                <AvatarImage src={player.avatar} data-ai-hint={player.dataAiHint} />
+                                <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">{player.name}</p>
+                                    <p className="text-xs text-muted-foreground">{player.league}</p>
+                                </div>
+                            </div>
+                            </TableCell>
+                            <TableCell className="text-right font-mono font-bold text-accent">{player.points} pts</TableCell>
+                            <TableCell className="text-center font-mono">{player.record}</TableCell>
+                            <TableCell className="text-center">
+                                <div className="flex justify-center gap-2">
+                                    <Badge variant="outline" className="border-yellow-400/50 text-yellow-300">
+                                        <Crown className="w-4 h-4 mr-1"/> {player.rank}st
+                                    </Badge>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </CardContent>
+                </Card>
+            </TabsContent>
+            <TabsContent value="normal">
+                {/* Placeholder for Normal Mode Leaderboard */}
+                 <Card className="bg-card/50 backdrop-blur-sm">
+                    <CardHeader>
+                        <CardTitle className="font-headline">Normal Mode Leaderboard</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Rank</TableHead>
+                                    <TableHead>Player</TableHead>
+                                    <TableHead className="text-right">Profit %</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                            {normalData.map((player) => (
+                                <TableRow key={player.rank} onClick={() => setSelectedAddress(player.address)} className="cursor-pointer">
+                                    <TableCell>{player.rank}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="w-8 h-8"><AvatarImage src={player.avatar} data-ai-hint={player.dataAiHint} /></Avatar>
+                                            {player.name}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right text-green-400 font-mono">{player.profit}</TableCell>
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                 </Card>
+            </TabsContent>
+            <TabsContent value="teams">
+                {/* Placeholder for Teams Leaderboard */}
+                 <div className="text-center py-16 text-muted-foreground">Team rankings coming soon!</div>
+            </TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="xl:col-span-1 space-y-6">
+        <Card className="bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+                <CardTitle className="font-headline text-lg">Power Rankings Explained</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+                <p>1-tier team power rankings are calculated by summing points from the following categories.</p>
+                <div className="space-y-2 border-t border-border pt-4">
+                   <div className="font-semibold text-foreground">Team Match Result Points</div>
+                   <p>⚔️ Opponent's Strength: Power score difference</p>
+                   <p>📈 Win Score Difference: Match win/loss</p>
+                   <p>💥 Upset Bonus: e.g., Worlds Playoffs > Regular Season</p>
+                </div>
+                 <div className="space-y-2 border-t border-border pt-4">
+                    <div className="font-semibold text-foreground">Regional League Power</div>
+                     <p>LCK: 1755, LPL: 1604, LEC: 1341...</p>
+                </div>
+                 <div className="space-y-2 border-t border-border pt-4">
+                    <div className="font-semibold text-foreground">International Competition Results</div>
+                     <Button variant="link" className="p-0 h-auto">Learn More</Button>
+                </div>
+            </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

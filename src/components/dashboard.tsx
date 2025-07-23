@@ -2,13 +2,11 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, Users, Settings, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare } from 'lucide-react';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare, Users } from 'lucide-react';
 import { useState } from 'react';
-import { VolatilityGauge } from './volatility-gauge';
 import { Guide } from './guide';
 import { LiquidationTracker } from './liquidation-tracker';
 import { HyperliquidTracker } from './hyperliquid-tracker';
-import { WhaleWatch } from './whale-watch';
 import { AISummarizer } from './ai-summarizer';
 import { DatasetTables } from './dataset-tables';
 import { TradingViewChart } from './trading-view-chart';
@@ -28,7 +26,6 @@ const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '리더보드' : 'Leaderboard', icon: ShieldCheck, view: 'leaderboard' },
   { name: lang === 'ko' ? '청산' : 'Liquidations', icon: Radio, view: 'liquidations' },
   { name: lang === 'ko' ? '하이퍼리퀴드' : 'Hyperliquid', icon: History, view: 'hyperliquid' },
-  { name: lang === 'ko' ? '고래 추적' : 'Whale Watch', icon: Users, view: 'whale' },
   { name: lang === 'ko' ? 'AI 분석' : 'AI Analysis', icon: BotMessageSquare, view: 'ai' },
   { name: lang === 'ko' ? '데이터셋' : 'Datasets', icon: Database, view: 'data' },
 ];
@@ -78,7 +75,6 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
                <TradingViewChart />
             </div>
             <div className="xl:col-span-1 space-y-6">
-              <VolatilityGauge lang={lang} />
               <CommunityChat />
             </div>
           </div>
@@ -93,8 +89,6 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
         return <LiquidationTracker />;
       case 'hyperliquid':
         return <HyperliquidTracker />;
-      case 'whale':
-        return <WhaleWatch />;
       case 'ai':
         return <AISummarizer />;
       case 'data':

@@ -1,8 +1,12 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+
 
 const whaleTrades = [
   {
@@ -10,75 +14,48 @@ const whaleTrades = [
     symbol: 'BTC',
     side: 'Long',
     positionUsd: '1,250,432.10',
-    positionCoin: '18.45',
     entryPrice: '67,774.00',
     liqPrice: '61,234.50',
-    margin: '125,043.21',
     pnl: '+24,567.80',
     leverage: '10x',
     type: 'Isolated',
-    tradePrice: '68,102.30',
     timestamp: '2m ago',
+    logo: 'https://placehold.co/40x40.png',
+    dataAiHint: 'crypto bitgo',
+    tag: 'Position Increase',
+    tagVariant: 'secondary'
   },
   {
     address: '0x20c2...44f5',
     symbol: 'ETH',
     side: 'Short',
     positionUsd: '850,212.50',
-    positionCoin: '239.50',
     entryPrice: '3,550.00',
     liqPrice: '3,890.10',
-    margin: '170,042.50',
     pnl: '-5,123.45',
     leverage: '5x',
     type: 'Cross',
-    tradePrice: '3,541.50',
     timestamp: '5m ago',
+    logo: 'https://placehold.co/40x40.png',
+    dataAiHint: 'anonymous whale',
+    tag: 'New High-Risk Short',
+    tagVariant: 'destructive'
   },
     {
     address: '0xfae9...3571',
     symbol: 'SOL',
     side: 'Long',
     positionUsd: '550,000.00',
-    positionCoin: '3,353.65',
     entryPrice: '164.00',
     liqPrice: '148.50',
-    margin: '55,000.00',
     pnl: '+12,321.00',
     leverage: '10x',
     type: 'Isolated',
-    tradePrice: '165.20',
     timestamp: '12m ago',
-  },
-  {
-    address: '0x77c3...5e45',
-    symbol: 'BTC',
-    side: 'Short',
-    positionUsd: '2,100,000.00',
-    positionCoin: '31.00',
-    entryPrice: '67,741.93',
-    liqPrice: '72,500.00',
-    margin: '420,000.00',
-    pnl: '+5,800.00',
-    leverage: '5x',
-    type: 'Cross',
-    tradePrice: '67,500.00',
-    timestamp: '28m ago',
-  },
-    {
-    address: '0x9794...333b',
-    symbol: 'ETH',
-    side: 'Long',
-    positionUsd: '750,000.00',
-    positionCoin: '211.26',
-    entryPrice: '3,550.00',
-    liqPrice: '3,200.00',
-    margin: '75,000.00',
-    pnl: '-2,500.00',
-    leverage: '10x',
-    type: 'Isolated',
-    tradePrice: '3,530.00',
-    timestamp: '45m ago',
+    logo: 'https://placehold.co/40x40.png',
+    dataAiHint: 'solana coin',
+    tag: 'Investment Opportunity',
+    tagVariant: 'default'
   },
 ];
 
@@ -86,46 +63,49 @@ export function HyperliquidTracker() {
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-dashed">
         <CardHeader>
-            <CardTitle className="font-headline">Recent Large Trades</CardTitle>
+            <CardTitle className="font-headline">Hyperliquid Whale Feed</CardTitle>
         </CardHeader>
         <CardContent>
-        <Table>
-            <TableHeader>
-            <TableRow>
-                <TableHead>Address</TableHead>
-                <TableHead>Symbol</TableHead>
-                <TableHead>Side</TableHead>
-                <TableHead className="text-right">Position (USD)</TableHead>
-                <TableHead className="text-right">Entry Price</TableHead>
-                <TableHead className="text-right">Liq. Price</TableHead>
-                <TableHead className="text-right">Unrealised PnL</TableHead>
-                <TableHead>Leverage</TableHead>
-                <TableHead>Timestamp</TableHead>
-            </TableRow>
-            </TableHeader>
-            <TableBody>
-            {whaleTrades.map((trade, index) => (
-                <TableRow key={index}>
-                <TableCell className="font-code text-accent hover:underline cursor-pointer">{trade.address}</TableCell>
-                <TableCell>{trade.symbol}</TableCell>
-                <TableCell>
-                    <Badge variant={trade.side === 'Long' ? 'default' : 'destructive'} className={trade.side === 'Long' ? 'bg-green-600/80' : 'bg-red-600/80'}>
-                    {trade.side}
-                    </Badge>
-                </TableCell>
-                <TableCell className="text-right font-medium">${trade.positionUsd}</TableCell>
-                <TableCell className="text-right font-code">${trade.entryPrice}</TableCell>
-                <TableCell className="text-right font-code">${trade.liqPrice}</TableCell>
-                <TableCell className={`text-right font-medium ${trade.pnl.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                    {trade.pnl}
-                </TableCell>
-                <TableCell>{trade.leverage} {trade.type}</TableCell>
-                <TableCell className="text-muted-foreground">{trade.timestamp}</TableCell>
-                </TableRow>
-            ))}
-            </TableBody>
-        </Table>
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium">Key Wallet Signals</h3>
+                <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" className="bg-accent/50">All</Button>
+                    <Button variant="ghost" size="sm">High Risk</Button>
+                    <Button variant="ghost" size="sm">Warning Sign</Button>
+                    <Button variant="ghost" size="sm">Investment Opportunity</Button>
+                </div>
+            </div>
+            <div className="space-y-4">
+                {whaleTrades.map((tx, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center gap-4">
+                        <Avatar>
+                        <AvatarImage src={tx.logo} data-ai-hint={tx.dataAiHint} />
+                        <AvatarFallback>{tx.address.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                        <p className="font-semibold">
+                            {tx.address}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{tx.timestamp}</span>
+                            <Badge variant={tx.tagVariant as any}>{tx.tag}</Badge>
+                        </div>
+                        </div>
+                    </div>
+                    <div>
+                      <p className={`font-mono text-lg text-right ${tx.pnl.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                        {tx.side} {tx.symbol} {tx.pnl}
+                      </p>
+                      <p className="text-sm text-muted-foreground text-right">
+                        Value: ${tx.positionUsd}
+                      </p>
+                    </div>
+                    </div>
+                ))}
+            </div>
         </CardContent>
     </Card>
   );
 }
+
