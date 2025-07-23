@@ -5,15 +5,32 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { cn } from '@/lib/utils';
 import { TrendingUp } from 'lucide-react';
 
-const gaugeLevels = [
-  { level: 1, name: 'Calm', color: 'bg-blue-500', animation: 'animate-pulse-calm', description: 'Markets are stable. Low volatility detected.' },
-  { level: 2, name: 'Tension', color: 'bg-yellow-500', animation: 'animate-pulse-tension', description: 'Volatility increasing. Market tension is building.' },
-  { level: 3, name: 'Critical', color: 'bg-red-500', animation: 'animate-flash-red', description: 'Critical volatility! Ranked game imminent.' },
-  { level: 4, name: 'Explosion', color: 'bg-accent', animation: 'animate-ping', description: 'Ranked Game Started! Volatility has exploded.' },
+const getGaugeLevels = (lang: 'en' | 'ko') => [
+  { level: 1, name: lang === 'ko' ? '고요' : 'Calm', color: 'bg-blue-500', animation: 'animate-pulse-calm', description: lang === 'ko' ? '시장이 안정적입니다. 낮은 변동성이 감지됩니다.' : 'Markets are stable. Low volatility detected.' },
+  { level: 2, name: lang === 'ko' ? '긴장' : 'Tension', color: 'bg-yellow-500', animation: 'animate-pulse-tension', description: lang === 'ko' ? '변동성이 증가하고 있습니다. 시장의 긴장감이 고조됩니다.' : 'Volatility increasing. Market tension is building.' },
+  { level: 3, name: lang === 'ko' ? '임계' : 'Critical', color: 'bg-red-500', animation: 'animate-flash-red', description: lang === 'ko' ? '임계 변동성! 랭크 게임이 임박했습니다.' : 'Critical volatility! Ranked game imminent.' },
+  { level: 4, name: lang === 'ko' ? '폭발' : 'Explosion', color: 'bg-accent', animation: 'animate-ping', description: lang === 'ko' ? '랭크 게임 시작! 변동성이 폭발했습니다.' : 'Ranked Game Started! Volatility has exploded.' },
 ];
 
-export function VolatilityGauge() {
+const content = {
+    en: {
+        title: 'Volatility Gauge',
+        levelLabel: 'Market Tension Level',
+        countdown: (time: string) => `RANKED GAME STARTING IN: ${time}`,
+        live: 'RANKED GAME LIVE'
+    },
+    ko: {
+        title: '변동성 게이지',
+        levelLabel: '시장 긴장도 레벨',
+        countdown: (time: string) => `랭크 게임 시작까지: ${time}`,
+        live: '랭크 게임 진행 중'
+    }
+}
+
+export function VolatilityGauge({ lang }: { lang: 'en' | 'ko' }) {
   const [currentLevel, setCurrentLevel] = useState(0);
+  const gaugeLevels = getGaugeLevels(lang);
+  const currentContent = content[lang];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,10 +46,10 @@ export function VolatilityGauge() {
     <Card className="border-2 border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl shadow-accent/10">
       <CardHeader className="text-center">
         <CardTitle className="font-headline text-3xl tracking-wider flex items-center justify-center gap-2">
-          <TrendingUp className="w-8 h-8"/> Volatility Gauge
+          <TrendingUp className="w-8 h-8"/> {currentContent.title}
         </CardTitle>
         <CardDescription className="font-body text-lg">
-          Market Tension Level: <span className="font-bold text-accent">{name}</span>
+          {currentContent.levelLabel}: <span className="font-bold text-accent">{name}</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -43,15 +60,15 @@ export function VolatilityGauge() {
           </div>
           <p className="text-center text-muted-foreground font-body max-w-md">{description}</p>
           
-          {name === 'Critical' && (
+          {name === (lang === 'ko' ? '임계' : 'Critical') && (
              <div className="font-code text-2xl text-red-400 animate-pulse">
-                RANKED GAME STARTING IN: 00:59
+                {currentContent.countdown('00:59')}
              </div>
           )}
 
-          {name === 'Explosion' && (
+          {name === (lang === 'ko' ? '폭발' : 'Explosion') && (
              <div className="font-logo text-3xl text-accent tracking-widest animate-pulse">
-                RANKED GAME LIVE
+                {currentContent.live}
              </div>
           )}
         </div>
