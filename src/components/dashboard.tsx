@@ -1,8 +1,8 @@
 
 'use client';
 
-import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, Users, Settings, BotMessageSquare, BookUser, Languages, Database } from 'lucide-react';
+import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, Users, Settings, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare } from 'lucide-react';
 import { useState } from 'react';
 import { VolatilityGauge } from './volatility-gauge';
 import { Guide } from './guide';
@@ -14,6 +14,12 @@ import { DatasetTables } from './dataset-tables';
 import { TradingViewChart } from './trading-view-chart';
 import { CommunityChat } from './community-chat';
 import { NormalModeBoard } from './normal-mode-board';
+import { Leaderboard } from './leaderboard';
+import { AuthModal } from './auth-modal';
+import { Button } from './ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { UserNav } from './user-nav';
 
 const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
@@ -44,13 +50,31 @@ const content = {
 
 export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
   const [activeView, setActiveView] = useState('ranked');
+  const { toast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentLang = searchParams.get('lang') || 'ko';
+
+  const toggleLanguage = () => {
+    const newLang = currentLang === 'en' ? 'ko' : 'en';
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set('lang', newLang);
+    router.replace(`${pathname}?${newSearchParams.toString()}`);
+    
+    toast({
+        title: newLang === 'ko' ? '언어 변경' : 'Language Changed',
+        description: newLang === 'ko' ? '이제 한국어로 표시됩니다.' : 'Now displaying in English.',
+    });
+  }
+
 
   const renderContent = () => {
     switch (activeView) {
       case 'ranked':
         return (
-           <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            <div className="xl:col-span-3">
+           <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+            <div className="xl:col-span-4">
                <TradingViewChart />
             </div>
             <div className="xl:col-span-1 space-y-6">
@@ -63,6 +87,8 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
         return <NormalModeBoard lang={lang} />;
       case 'guide':
         return <Guide lang={lang} />;
+      case 'leaderboard':
+        return <Leaderboard />;
       case 'liquidations':
         return <LiquidationTracker />;
       case 'hyperliquid':
@@ -87,7 +113,10 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
       <div className="flex min-h-[calc(100vh-3.5rem)]">
         <Sidebar className="hidden lg:flex flex-col">
           <SidebarHeader>
-            <h2 className="text-2xl font-bold font-logo text-foreground tracking-widest">Leagues</h2>
+             <a href="#" className="flex items-center space-x-2">
+                <GanttChartSquare className="h-6 w-6 text-accent" />
+                <span className="font-bold font-logo text-lg tracking-wider">TradeOS</span>
+            </a>
           </SidebarHeader>
           <SidebarContent className="flex-1">
             <SidebarMenu>
@@ -104,16 +133,14 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
               ))}
             </SidebarMenu>
           </SidebarContent>
-           <SidebarHeader>
-             <SidebarMenu>
-               <SidebarMenuItem>
-                <SidebarMenuButton>
-                    <Settings className="w-5 h-5" />
-                    {content[lang].settings}
-                </SidebarMenuButton>
-               </SidebarMenuItem>
-             </SidebarMenu>
-          </SidebarHeader>
+           <SidebarFooter>
+             <div className="flex items-center justify-center gap-2 p-2">
+                <Button variant="ghost" size="icon" onClick={toggleLanguage}>
+                    <Languages className="w-6 h-6" />
+                </Button>
+                <UserNav />
+             </div>
+          </SidebarFooter>
         </Sidebar>
         <SidebarInset>
           <main className="p-4 sm:p-6 lg:p-8">

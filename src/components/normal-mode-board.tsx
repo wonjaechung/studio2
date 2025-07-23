@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Search, PenSquare, MessageSquare, TrendingUp, Newspaper, Heart, Flame, Pin } from 'lucide-react';
+import { Search, PenSquare, MessageSquare, TrendingUp, Newspaper, Heart, Flame, Pin, User, Languages } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { useState } from 'react';
 import { PlayerProfile } from './player-profile';
@@ -61,8 +61,8 @@ const posts = [
 ];
 
 const popularSearches = {
-    ko: ['솔라나', '비트코인', 'FOMC', '밈코인', '에어드랍', '이더리움'],
-    en: ['Solana', 'Bitcoin', 'FOMC', 'Memecoin', 'Airdrop', 'Ethereum'],
+    ko: ['솔라나', '비트코인', 'FOMC', '밈코인', '에어드랍', '이더리움', '변동성', '리더보드', '전략', '신규상장'],
+    en: ['Solana', 'Bitcoin', 'FOMC', 'Memecoin', 'Airdrop', 'Ethereum', 'Volatility', 'Leaderboard', 'Strategy', 'New Listing'],
 };
 
 const newsItems = {
@@ -113,8 +113,7 @@ export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
                         <CardDescription>{currentContent.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {/* Popular Posts Section */}
-                         <div className="mb-8">
+                        <div className="mb-8">
                             <h3 className="font-headline text-xl mb-4 flex items-center gap-2">
                                 <Pin className="w-5 h-5 text-accent" />
                                 {currentContent.popularPosts}
@@ -146,8 +145,6 @@ export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
                             </div>
                         </div>
 
-
-                        {/* All Posts Section */}
                         <div className="flex justify-between items-center mb-4">
                             <div className="relative w-full max-w-sm">
                                 <Input placeholder={currentContent.searchPlaceholder} className="pr-10 bg-background/50" />
@@ -214,12 +211,14 @@ export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
                            {currentContent.popularSearches}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2">
-                        {currentSearches.map((term, index) => (
-                            <Button key={index} variant="outline" size="sm" className="bg-background/50 hover:bg-accent/20 hover:border-accent/50">
-                                {term}
-                            </Button>
-                        ))}
+                    <CardContent>
+                        <ol className="list-decimal list-inside space-y-2">
+                            {currentSearches.map((term, index) => (
+                                <li key={index} className="hover:text-accent cursor-pointer">
+                                    <span className="font-bold w-6 inline-block">{index + 1}.</span> {term}
+                                </li>
+                            ))}
+                        </ol>
                     </CardContent>
                 </Card>
                 <Card className="bg-card/30 backdrop-blur-sm border-dashed">

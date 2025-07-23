@@ -69,12 +69,12 @@ export function PlayerProfile() {
                                 <AreaChart data={pnlData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                                     <defs>
                                         <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="var(--color-green)" stopOpacity={0.4}/>
-                                            <stop offset="95%" stopColor="var(--color-green)" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.4}/>
+                                            <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0}/>
                                         </linearGradient>
                                         <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="var(--color-red)" stopOpacity={0.4}/>
-                                            <stop offset="95%" stopColor="var(--color-red)" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.4}/>
+                                            <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0}/>
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
