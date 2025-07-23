@@ -1,7 +1,7 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, Users, Settings, BotMessageSquare, BookUser, Languages } from 'lucide-react';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, Users, Settings, BotMessageSquare, BookUser, Languages, Database } from 'lucide-react';
 import { useState } from 'react';
 import { VolatilityGauge } from './volatility-gauge';
 import { Guide } from './guide';
@@ -13,6 +13,7 @@ import { DatasetTables } from './dataset-tables';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { TradingViewChart } from './trading-view-chart';
+import { CommunityChat } from './community-chat';
 
 const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
@@ -22,7 +23,7 @@ const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '하이퍼리퀴드' : 'Hyperliquid', icon: History, view: 'hyperliquid' },
   { name: lang === 'ko' ? '고래 추적' : 'Whale Watch', icon: Users, view: 'whale' },
   { name: lang === 'ko' ? 'AI 분석' : 'AI Analysis', icon: BotMessageSquare, view: 'ai' },
-  { name: lang === 'ko' ? '데이터셋' : 'Datasets', icon: Users, view: 'data' },
+  { name: lang === 'ko' ? '데이터셋' : 'Datasets', icon: Database, view: 'data' },
   { name: lang === 'ko' ? '커뮤니티' : 'Community', icon: Users, view: 'community' },
 ];
 
@@ -79,6 +80,8 @@ export function Dashboard() {
         return <AISummarizer />;
       case 'data':
         return <DatasetTables />;
+      case 'community':
+        return <CommunityChat />;
       default:
         return (
           <div className="flex items-center justify-center h-96">
