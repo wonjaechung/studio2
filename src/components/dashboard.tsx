@@ -12,6 +12,7 @@ import { AISummarizer } from './ai-summarizer';
 import { DatasetTables } from './dataset-tables';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { TradingViewChart } from './trading-view-chart';
 
 const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
@@ -57,9 +58,14 @@ export function Dashboard() {
     switch (activeView) {
       case 'ranked':
         return (
-          <section id="volatility-gauge">
-            <VolatilityGauge lang={language} />
-          </section>
+           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="xl:col-span-2">
+               <TradingViewChart />
+            </div>
+            <div className="xl:col-span-1">
+              <VolatilityGauge lang={language} />
+            </div>
+          </div>
         );
       case 'guide':
         return <Guide lang={language} />;
