@@ -1,0 +1,314 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where security check has been disabled.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+docs/
+  privacy.md
+  terms.md
+LICENSE.md
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="docs/privacy.md">
+# TrackLiquid Bot Privacy Policy
+
+_Last updated: May 2025_
+
+TrackLiquid (“we”, “us”) respects your privacy. This policy explains what we collect, why, and your rights.
+
+---
+
+## 1. What We Collect
+
+**User-Provided**  
+- Guild ID (Discord server).  
+- Wallet addresses you add.  
+- Optional aliases.  
+- Notification channel setting.
+
+**Automatically Collected**  
+- Command usage logs (for debugging and metrics), including on-demand PnL lookups via `/unrealized`.  
+- Public on-chain data fetched from the Hyperliquid API.
+
+---
+
+## 2. How We Use It
+
+- To post real-time alerts in your server.  
+- To process on-demand unrealized PnL lookups (`/unrealized`).  
+- To store your settings (wallets, aliases, notification channel).  
+- To improve the bot via anonymized usage metrics.
+
+---
+
+## 3. Data Sharing
+
+- We never sell or share your data with third parties.  
+- We only send public, on-chain data to Hyperliquid’s API for position and price queries.
+
+---
+
+## 4. Retention
+
+- Wallets, aliases, and channel settings are kept until you remove them or uninstall the bot.  
+- Logs are temporary and used only for debugging and performance tuning; they are rotated regularly.
+
+---
+
+## 5. Security
+
+- We **don't** collect private keys or other sensitive personal data.  
+- All external calls (to Hyperliquid or Discord) use encrypted HTTPS connections.
+
+---
+
+## 6. Your Rights
+
+- Remove any wallet or alias at any time with `/managewallet`.  
+- Uninstall the bot from your server to delete all your data.
+
+---
+
+## 7. Changes
+
+We may update this policy as needed; continued use of the bot implies acceptance of any changes.
+
+---
+
+## 8. Contact
+
+- Support Server: https://discord.gg/ZwUmxk2Y3B  
+- Email: support@trackliquid.io
+</file>
+
+<file path="docs/terms.md">
+# TrackLiquid Bot Terms of Service
+
+_Last updated: May 2025_
+
+Welcome to TrackLiquid! These Terms of Service (“Terms”) govern your use of the TrackLiquid Discord bot (the “Service”). By inviting or using the bot, you agree to these Terms.
+
+---
+
+## 1. Definitions
+
+- **Service**: the TrackLiquid Discord bot.  
+- **You** or **User**: anyone who uses the Service.  
+- **Data**: public on-chain wallet activity fetched from Hyperliquid APIs.
+
+---
+
+## 2. Acceptance
+
+By using TrackLiquid, you accept these Terms in full. If you don't agree, do not add or use the bot.
+
+---
+
+## 3. Service Description
+
+TrackLiquid monitors Hyperliquid perp positions for wallets you register, posting alerts on opens and closes.  
+Additional features include:  
+- `/openpositions` — view current open PERP positions (size, entry price, leverage, P&L).  
+- `/unrealized` — on-demand unrealized PnL queries for tracked wallets.  
+
+We provide no uptime or accuracy guarantees.
+
+---
+
+## 4. Privacy & Data
+
+We collect only minimal data:
+
+- **Wallets**, **aliases**, and **notification channel**  
+- **Public on-chain data** from Hyperliquid  
+
+No private keys or personal data are stored. See our
+[Privacy Policy](./privacy.md) for details.
+
+---
+
+## 5. No Financial Advice
+
+The Service is informational only, not financial advice. Always do your own research before trading.
+
+---
+
+## 6. API Usage
+
+Please respect Hyperliquid’s rate limits. Abuse or excessively frequent requests may lead to temporary blocking.
+
+---
+
+## 7. Disclaimer & Limitation of Liability
+
+- **No warranty**: Service is provided “as-is.”  
+- **Limitation**: We are not liable for any losses or damages arising from your use of the bot.
+
+---
+
+## 8. Changes
+
+We may update these Terms at any time; continued use implies your acceptance of any changes.
+
+---
+
+## 9. Contact & License
+
+- **Support Server**: <https://discord.gg/ZwUmxk2Y3B>  
+- **Email**: support@trackliquid.io  
+- **License**: [MIT](./LICENSE.md)
+</file>
+
+<file path="LICENSE.md">
+# MIT License
+
+**Copyright (c) 2025 AlphaDragon50**
+
+Permission is hereby granted, **free of charge**, to any person obtaining a copy
+of this software and associated documentation files (the “Software”), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+> The above copyright notice and this permission notice shall be included in
+> all copies or substantial portions of the Software.
+
+---
+
+**The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.**
+</file>
+
+<file path="README.md">
+[![Invite](https://img.shields.io/badge/Invite-TrackLiquid-blue)](https://discord.com/oauth2/authorize?client_id=1366056784049082398&permissions=92160&integration_type=0&scope=bot+applications.commands)
+[![Support](https://img.shields.io/badge/Support-Discord-7289DA)](https://discord.gg/ZwUmxk2Y3B)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE.md)
+
+# 📡 TrackLiquid — Hyperliquid Wallet Tracker
+
+TrackLiquid brings real-time Hyperliquid perp position alerts straight into your Discord server.
+
+---
+
+## 🚀 Quick Start
+
+1. **Invite TrackLiquid**  
+   Click your personal invite link and choose a server.
+
+2. **Pick Your Alerts Channel**  
+   `/setchannel` → select the channel where alerts should post.
+
+3. **Add Wallets to Track (up to 3)**  
+   `/addwallet 0x5078c2fbea2...bedb6 [Whale]`  
+   *Optional alias helps you read alerts at a glance.*
+
+4. **View Unrealized PnL**  
+   `/unrealized` → select a tracked wallet to see its current unrealized P&L.
+
+---
+
+## ⚙️ Core Commands
+
+| Command           | Description                                                                                   |
+|-------------------|-----------------------------------------------------------------------------------------------|
+| `/help`           | Show a quick reminder of all available commands.                                              |
+| `/addwallet`      | Track a new wallet (with an optional alias). Use up to 3 wallets per server.                  |
+| `/listwallets`    | Quickly list your tracked wallets and aliases.                                                |
+| `/managewallet`   | View, rename, or remove any tracked wallet (includes “Remove All”).                           |
+| `/openpositions`  | Show current open PERP positions for a tracked wallet (size, entry price, leverage, P&L).    |
+| `/unrealized`     | Show unrealized PnL for a tracked wallet.                                                     |
+| `/setchannel`     | Choose which channel receives perp notifications (leave blank to clear).                      |
+| `/status`         | Display bot uptime and how many wallets you’re tracking (e.g. `2/3`).                         |
+
+---
+
+## 💡 Examples
+
+- **Add a wallet with an (optional) alias**  
+  `/addwallet 0xABC...123 MyTradingWallet`  
+  <div align="center">
+    <img src="./assets/addwallet.prompt.PNG" alt="Add Wallet Prompt" width="300" />
+    <img src="./assets/addwallet.embed.PNG"  alt="Add Wallet Confirmation" width="300" />
+  </div>
+
+- **List & manage wallets**  
+  `/managewallet` → choose “MyTradingWallet” → rename, remove, or clear all.  
+  <div align="center">
+    <img src="./assets/managewallet_panel.PNG" alt="Manage Wallet Panel" width="300" />
+    <img src="./assets/managewallet_embed.PNG" alt="Manage Wallet Embed" width="300" />
+  </div>
+
+- **Check open positions**  
+  `/openpositions` → select your wallet → see entry price, size, leverage, PnL.  
+  <div align="center">
+    <img src="./assets/openpositions_embed.PNG" alt="Open Positions Embed" width="300" />
+  </div>
+
+- **Check Unrealized PnL**  
+  `/unrealized` → select your wallet → shows current unrealized profit & loss.  
+  <div align="center">
+    <img src="./assets/unrealized_embed.PNG" alt="Unrealized PnL Embed" width="300" />
+  </div>
+
+- **View bot status**  
+  `/status` → shows uptime and number of tracked wallets (e.g. `2/3`).  
+  <div align="center">
+    <img src="./assets/status_embed.PNG" alt="Status Embed" width="300" />
+  </div>
+
+---
+
+## 🤝 Support
+
+If you hit a snag or have a feature request, join our Support Server:  
+👉 https://discord.gg/ZwUmxk2Y3B
+
+---
+
+© 2025 AlphaDragon50 · [MIT License](./LICENSE.md)
+</file>
+
+</files>

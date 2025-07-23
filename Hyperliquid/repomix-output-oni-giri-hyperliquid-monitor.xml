@@ -1,0 +1,1312 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where security check has been disabled.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  workflows/
+    publish.yml
+src/
+  hyperliquid_monitor/
+    config.py
+    database.py
+    monitor.py
+    types.py
+tests/
+  conftest.py
+  test_database.py
+  test_monitor.py
+  test_types.py
+.gitignore
+LICENSE.md
+pyproject.toml
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/workflows/publish.yml">
+name: Publish to PyPI
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+    
+    - name: Install dependencies
+      run: poetry install
+    
+    - name: Run tests
+      run: |
+        # Only run unit tests that don't start the monitor
+        poetry run pytest tests/test_database.py tests/test_types.py \
+                         -v --cov=hyperliquid_monitor --cov-report=term-missing
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+    
+    - name: Configure Poetry
+      run: |
+        poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+    
+    - name: Build and publish
+      run: |
+        poetry build
+        poetry publish
+</file>
+
+<file path="src/hyperliquid_monitor/config.py">
+import os
+from dotenv import load_dotenv
+from hyperliquid_monitor.database import init_database
+
+# Load environment variables
+load_dotenv()
+
+# Get addresses from environment
+ADDRESSES = [addr.strip() for addr in os.getenv("MONITORED_ADDRESSES", "").split(",") if addr.strip()]
+
+# Initialize database and get path
+DB_PATH = init_database(os.getenv("DB_PATH", "trades.db"))
+</file>
+
+<file path="src/hyperliquid_monitor/database.py">
+import sqlite3
+import threading
+import os
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, Optional
+
+def init_database(db_path: Optional[str] = None) -> str:
+    """
+    Initialize a new database for the Hyperliquid monitor or validate an existing one.
+    
+    Args:
+        db_path: Optional path to the database. If None, creates a default 'trades.db'
+                in the current directory.
+    
+    Returns:
+        str: The absolute path to the initialized database
+        
+    Raises:
+        sqlite3.Error: If there's an error creating or accessing the database
+        ValueError: If the provided path is invalid
+    """
+    if db_path is None:
+        db_path = "trades.db"
+    
+    # Convert to Path object for easier manipulation
+    db_path = Path(db_path).resolve()
+    
+    # Create parent directories if they don't exist
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        # Create and test the database connection
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        
+        # Create the required tables
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS fills (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp DATETIME,
+            address TEXT,
+            coin TEXT,
+            side TEXT,
+            size REAL,
+            price REAL,
+            direction TEXT,
+            tx_hash TEXT,
+            fee REAL,
+            fee_token TEXT,
+            start_position REAL,
+            closed_pnl REAL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp DATETIME,
+            address TEXT,
+            coin TEXT,
+            action TEXT,
+            side TEXT,
+            size REAL,
+            price REAL,
+            order_id INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+        
+        # Create indexes for better query performance
+        cursor.execute('''
+        CREATE INDEX IF NOT EXISTS idx_fills_address ON fills(address)
+        ''')
+        cursor.execute('''
+        CREATE INDEX IF NOT EXISTS idx_fills_timestamp ON fills(timestamp)
+        ''')
+        cursor.execute('''
+        CREATE INDEX IF NOT EXISTS idx_orders_address ON orders(address)
+        ''')
+        cursor.execute('''
+        CREATE INDEX IF NOT EXISTS idx_orders_timestamp ON orders(timestamp)
+        ''')
+        
+        conn.commit()
+        conn.close()
+        
+        return str(db_path)
+        
+    except sqlite3.Error as e:
+        raise sqlite3.Error(f"Failed to initialize database at {db_path}: {str(e)}")
+    except Exception as e:
+        raise ValueError(f"Error creating database at {db_path}: {str(e)}")
+
+class TradeDatabase:
+    def __init__(self, db_path: str):
+        """Initialize the database connection and create tables if they don't exist."""
+        self.db_path = init_database(db_path)  # Use the init_database function
+        self._local = threading.local()
+        
+    @property
+    def conn(self) -> sqlite3.Connection:
+        if not hasattr(self._local, 'conn'):
+            self._local.conn = sqlite3.connect(self.db_path)
+        return self._local.conn
+
+    def store_fill(self, fill: Dict) -> None:
+        """Store a fill in the database."""
+        cursor = self.conn.cursor()
+        timestamp = datetime.fromtimestamp(int(fill.get("time", 0)) / 1000)
+        
+        cursor.execute('''
+        INSERT INTO fills (
+            timestamp, address, coin, side, size, price, direction, tx_hash, 
+            fee, fee_token, start_position, closed_pnl
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            timestamp,
+            fill.get("address", "Unknown"),
+            fill.get("coin", "Unknown"),
+            "BUY" if fill.get("side", "B") == "A" else "SELL",
+            float(fill.get("sz", 0)),
+            float(fill.get("px", 0)),
+            fill.get("dir", "Unknown"),
+            fill.get("hash", "Unknown"),
+            float(fill.get("fee", 0)),
+            fill.get("feeToken", "Unknown"),
+            float(fill.get("startPosition", 0)),
+            float(fill.get("closedPnl", 0))
+        ))
+        
+        self.conn.commit()
+
+    def store_order(self, order: Dict, action: str) -> None:
+        """Store an order in the database."""
+        cursor = self.conn.cursor()
+        timestamp = datetime.fromtimestamp(int(order.get("time", 0)) / 1000)
+        
+        # Get the placed or canceled order details
+        order_details = order.get("placed", {}) if action == "placed" else order.get("canceled", {})
+        
+        cursor.execute('''
+        INSERT INTO orders (timestamp, address, coin, action, side, size, price, order_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            timestamp,
+            order.get("address", "Unknown"),
+            order.get("coin", "Unknown"),
+            action,
+            "BUY" if order_details.get("side", "B") == "A" else "SELL",
+            float(order_details.get("sz", 0)),
+            float(order_details.get("px", 0)),
+            int(order_details.get("oid", 0))
+        ))
+        
+        self.conn.commit()
+
+    def close(self) -> None:
+        """Close the database connection."""
+        if hasattr(self._local, 'conn'):
+            self._local.conn.close()
+            delattr(self._local, 'conn')
+</file>
+
+<file path="src/hyperliquid_monitor/monitor.py">
+import signal
+import sys
+import threading
+from datetime import datetime
+from typing import Dict, Any, List, Optional, Union
+
+from hyperliquid.info import Info
+from hyperliquid.utils import constants
+
+from hyperliquid_monitor.database import TradeDatabase
+from hyperliquid_monitor.types import Trade, TradeCallback
+
+class HyperliquidMonitor:
+    def __init__(self, 
+                 addresses: List[str], 
+                 db_path: Optional[str] = None,
+                 callback: Optional[TradeCallback] = None,
+                 silent: bool = False):
+        """
+        Initialize the Hyperliquid monitor.
+        
+        Args:
+            addresses: List of addresses to monitor
+            db_path: Optional path to SQLite database. If None, trades won't be stored
+            callback: Optional callback function that will be called for each trade
+            silent: If True, callback notifications will be suppressed even if callback is provided.
+                   Useful for silent database recording. Default is False.
+        """
+        self.info = Info(constants.MAINNET_API_URL)
+        self.addresses = addresses
+        self.callback = callback if not silent else None
+        self.silent = silent
+        self.db = TradeDatabase(db_path) if db_path else None
+        self._stop_event = threading.Event()
+        self._db_lock = threading.Lock() if db_path else None
+        
+        if silent and not db_path:
+            raise ValueError("Silent mode requires a database path to be specified")
+        
+    def handle_shutdown(self, signum=None, frame=None):
+        """Handle shutdown signals"""
+        if self._stop_event.is_set():
+            sys.exit(0)
+            
+        print("\nShutting down gracefully...")
+        self._stop_event.set()
+        self.cleanup()
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
+        sys.exit(0)
+        
+    def cleanup(self):
+        """Clean up resources"""
+        if self.db:
+            with self._db_lock:
+                self.db.close()
+            if not self.silent:
+                print("Database connection closed.")
+
+    def create_event_handler(self, address: str):
+        """Creates an event handler for a specific address"""
+        def handle_event(event: Dict[str, Any]) -> None:
+            if self._stop_event.is_set():
+                return
+                
+            if not isinstance(event, dict):
+                return
+                
+            data = event.get("data", {})
+            
+            # Handle fills
+            if "fills" in data:
+                for fill in data["fills"]:
+                    if not isinstance(fill, dict):
+                        continue
+                    try:
+                        trade = self._process_fill(fill, address)
+                        if self.db:
+                            with self._db_lock:
+                                self.db.store_fill(fill)
+                        if self.callback and not self.silent:
+                            self.callback(trade)
+                    except Exception as e:
+                        if not self.silent:
+                            print(f"Error processing fill: {e}")
+                        
+            # Handle order updates        
+            if "orderUpdates" in data:
+                for update in data["orderUpdates"]:
+                    if not isinstance(update, dict):
+                        continue
+                    try:
+                        trades = self._process_order_update(update, address)
+                        if self.db:
+                            with self._db_lock:
+                                if "placed" in update:
+                                    self.db.store_order(update, "placed")
+                                elif "canceled" in update:
+                                    self.db.store_order(update, "canceled")
+                        if self.callback and not self.silent:
+                            for trade in trades:
+                                self.callback(trade)
+                    except Exception as e:
+                        if not self.silent:
+                            print(f"Error processing order update: {e}")
+        
+        return handle_event
+
+    def _process_fill(self, fill: Dict, address: str) -> Trade:
+        """Process fill information and return Trade object"""
+        timestamp = datetime.fromtimestamp(int(fill.get("time", 0)) / 1000)
+        
+        return Trade(
+            timestamp=timestamp,
+            address=address,
+            coin=fill.get("coin", "Unknown"),
+            side="BUY" if fill.get("side", "B") == "A" else "SELL",
+            size=float(fill.get("sz", 0)),
+            price=float(fill.get("px", 0)),
+            trade_type="FILL",
+            direction=fill.get("dir"),
+            tx_hash=fill.get("hash"),
+            fee=float(fill.get("fee", 0)),
+            fee_token=fill.get("feeToken"),
+            start_position=float(fill.get("startPosition", 0)),
+            closed_pnl=float(fill.get("closedPnl", 0))
+        )
+        
+    def _process_order_update(self, update: Dict, address: str) -> List[Trade]:
+        """Process order update information and return Trade objects"""
+        timestamp = datetime.fromtimestamp(int(update.get("time", 0)) / 1000)
+        trades = []
+        
+        if "placed" in update:
+            order = update["placed"]
+            trades.append(Trade(
+                timestamp=timestamp,
+                address=address,
+                coin=update.get("coin", "Unknown"),
+                side="BUY" if order.get("side", "B") == "A" else "SELL",
+                size=float(order.get("sz", 0)),
+                price=float(order.get("px", 0)),
+                trade_type="ORDER_PLACED",
+                order_id=int(order.get("oid", 0))
+            ))
+        elif "canceled" in update:
+            order = update["canceled"]
+            trades.append(Trade(
+                timestamp=timestamp,
+                address=address,
+                coin=update.get("coin", "Unknown"),
+                side="BUY" if order.get("side", "B") == "A" else "SELL",
+                size=float(order.get("sz", 0)),
+                price=float(order.get("px", 0)),
+                trade_type="ORDER_CANCELLED",
+                order_id=int(order.get("oid", 0))
+            ))
+            
+        return trades
+            
+    def start(self) -> None:
+        """Start monitoring addresses"""
+        if not self.addresses:
+            raise ValueError("No addresses configured to monitor")
+            
+        # Set up signal handlers
+        signal.signal(signal.SIGINT, self.handle_shutdown)
+        signal.signal(signal.SIGTERM, self.handle_shutdown)
+        
+        # Subscribe to events for each address
+        for address in self.addresses:
+            handler = self.create_event_handler(address)
+            self.info.subscribe(
+                {"type": "userEvents", "user": address},
+                handler
+            )
+            self.info.subscribe(
+                {"type": "userFills", "user": address},
+                handler
+            )
+        
+        try:
+            while not self._stop_event.is_set():
+                self._stop_event.wait(1)
+        except KeyboardInterrupt:
+            self.handle_shutdown()
+
+    def stop(self):
+        """Stop the monitor"""
+        self._stop_event.set()
+        self.cleanup()
+</file>
+
+<file path="src/hyperliquid_monitor/types.py">
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional, Literal, Callable
+
+TradeType = Literal["FILL", "ORDER_PLACED", "ORDER_CANCELLED"]
+TradeSide = Literal["BUY", "SELL"]
+
+@dataclass
+class Trade:
+    timestamp: datetime
+    address: str
+    coin: str
+    side: TradeSide
+    size: float
+    price: float
+    trade_type: TradeType
+    direction: Optional[str] = None
+    tx_hash: Optional[str] = None
+    fee: Optional[float] = None
+    fee_token: Optional[str] = None
+    start_position: Optional[float] = None
+    closed_pnl: Optional[float] = None
+    order_id: Optional[int] = None
+
+    def __post_init__(self):
+        """Validate trade data after initialization"""
+        if self.side not in ("BUY", "SELL"):
+            raise ValueError(f"Invalid side: {self.side}. Must be 'BUY' or 'SELL'")
+        
+        if self.trade_type not in ("FILL", "ORDER_PLACED", "ORDER_CANCELLED"):
+            raise ValueError(
+                f"Invalid trade_type: {self.trade_type}. "
+                "Must be 'FILL', 'ORDER_PLACED', or 'ORDER_CANCELLED'"
+            )
+
+TradeCallback = Callable[[Trade], None]
+</file>
+
+<file path="tests/conftest.py">
+import os
+import tempfile
+from datetime import datetime
+from typing import Dict
+import pytest
+from hyperliquid_monitor.types import Trade
+
+@pytest.fixture
+def temp_db_path(tmp_path):
+    """Create a temporary database path"""
+    db_path = tmp_path / "test.db"
+    return str(db_path)
+
+@pytest.fixture
+def sample_fill_data() -> Dict:
+    """Sample fill data for testing"""
+    return {
+        "coin": "ETH",
+        "px": "1850.5",
+        "sz": "0.5",
+        "side": "A",
+        "time": 1699457400000,  # 2023-11-08 15:30:00
+        "startPosition": "-10.5",
+        "dir": "Open Long",
+        "closedPnl": "100.25",
+        "hash": "0x123...",
+        "oid": 12345,
+        "crossed": False,
+        "fee": "1.5",
+        "tid": 67890,
+        "feeToken": "USDC"
+    }
+
+@pytest.fixture
+def sample_order_data() -> Dict:
+    """Sample order data for testing"""
+    return {
+        "coin": "BTC",
+        "time": 1699457400000,  # 2023-11-08 15:30:00
+        "placed": {
+            "px": "35000.5",
+            "sz": "0.1",
+            "side": "B",
+            "oid": 54321
+        }
+    }
+
+@pytest.fixture
+def sample_trade() -> Trade:
+    """Sample trade object for testing"""
+    return Trade(
+        timestamp=datetime(2023, 11, 8, 15, 30),
+        address="0x123...",
+        coin="ETH",
+        side="BUY",
+        size=0.5,
+        price=1850.5,
+        trade_type="FILL",
+        direction="Open Long",
+        tx_hash="0x123...",
+        fee=1.5,
+        fee_token="USDC",
+        start_position=-10.5,
+        closed_pnl=100.25
+    )
+</file>
+
+<file path="tests/test_database.py">
+import pytest
+import os
+import threading
+from pathlib import Path
+from hyperliquid_monitor.database import TradeDatabase, init_database
+
+def test_database_initialization(temp_db_path):
+    db = TradeDatabase(temp_db_path)
+    assert db is not None
+    db.close()
+
+def test_init_database_default():
+    db_path = init_database()
+    assert os.path.exists(db_path)
+    assert db_path.endswith("trades.db")
+    os.remove(db_path)  # Cleanup
+
+def test_init_database_custom_path(tmp_path):
+    custom_path = tmp_path / "custom" / "path" / "db.sqlite"
+    db_path = init_database(str(custom_path))
+    assert os.path.exists(db_path)
+    assert str(custom_path) == db_path
+    assert os.path.exists(custom_path.parent)  # Parent directories should be created
+
+def test_database_tables(temp_db_path):
+    db = TradeDatabase(temp_db_path)
+    cursor = db.conn.cursor()
+    
+    # Check fills table
+    cursor.execute("""
+        SELECT name FROM sqlite_master 
+        WHERE type='table' AND name='fills'
+    """)
+    assert cursor.fetchone() is not None
+    
+    # Check orders table
+    cursor.execute("""
+        SELECT name FROM sqlite_master 
+        WHERE type='table' AND name='orders'
+    """)
+    assert cursor.fetchone() is not None
+    
+    # Check indexes
+    cursor.execute("""
+        SELECT name FROM sqlite_master 
+        WHERE type='index' AND sql IS NOT NULL
+    """)
+    indexes = [row[0] for row in cursor.fetchall()]
+    assert "idx_fills_address" in indexes
+    assert "idx_fills_timestamp" in indexes
+    assert "idx_orders_address" in indexes
+    assert "idx_orders_timestamp" in indexes
+    
+    db.close()
+
+def test_store_fill(temp_db_path, sample_fill_data):
+    db = TradeDatabase(temp_db_path)
+    
+    # Add address to fill data
+    fill_data = {**sample_fill_data, "address": "0x123..."}
+    
+    # Store the fill
+    db.store_fill(fill_data)
+    
+    # Query the stored fill
+    cursor = db.conn.cursor()
+    cursor.execute("SELECT * FROM fills")
+    row = cursor.fetchone()
+    
+    assert row is not None
+    assert row[2] == "0x123..."  # address
+    assert row[3] == "ETH"      # coin
+    assert row[4] == "BUY"      # side
+    assert float(row[5]) == 0.5  # size
+    assert float(row[6]) == 1850.5  # price
+    
+    db.close()
+
+def test_store_order(temp_db_path, sample_order_data):
+    db = TradeDatabase(temp_db_path)
+    
+    # Add address to order data
+    order_data = {**sample_order_data, "address": "0x123..."}
+    
+    # Store the order
+    db.store_order(order_data, "placed")
+    
+    # Query the stored order
+    cursor = db.conn.cursor()
+    cursor.execute("SELECT * FROM orders")
+    row = cursor.fetchone()
+    
+    assert row is not None
+    assert row[2] == "0x123..."  # address
+    assert row[3] == "BTC"      # coin
+    assert row[4] == "placed"   # action
+    assert row[5] == "SELL"     # side
+    assert float(row[6]) == 0.1  # size
+    assert float(row[7]) == 35000.5  # price
+    assert row[8] == 54321      # order_id
+    
+    db.close()
+
+def test_database_reuse(temp_db_path, sample_fill_data):
+    # First instance
+    db1 = TradeDatabase(temp_db_path)
+    fill_data = {**sample_fill_data, "address": "0x123..."}
+    db1.store_fill(fill_data)
+    db1.close()
+    
+    # Second instance should be able to access the same data
+    db2 = TradeDatabase(temp_db_path)
+    cursor = db2.conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM fills")
+    count = cursor.fetchone()[0]
+    assert count == 1
+    db2.close()
+
+def test_init_database_invalid_path(tmp_path):
+    # Using a file as directory to simulate invalid path
+    invalid_file = tmp_path / "file.txt"
+    invalid_file.write_text("")  # Create a file
+    invalid_path = str(invalid_file / "db.sqlite")  # Try to create DB inside a file
+    
+    with pytest.raises((ValueError, OSError)):
+        init_database(invalid_path)
+
+def test_database_connection_thread_safety(temp_db_path):
+    db = TradeDatabase(temp_db_path)
+    connections = []
+    
+    def create_connection():
+        conn = db.conn
+        connections.append(conn)
+    
+    # Create connections in different threads
+    thread1 = threading.Thread(target=create_connection)
+    thread2 = threading.Thread(target=create_connection)
+    
+    thread1.start()
+    thread2.start()
+    
+    thread1.join()
+    thread2.join()
+    
+    # Verify we got different connections
+    assert len(connections) == 2
+    assert connections[0] != connections[1]
+    
+    db.close()
+</file>
+
+<file path="tests/test_monitor.py">
+import pytest
+from unittest.mock import Mock, call
+from freezegun import freeze_time
+from datetime import datetime
+
+from hyperliquid_monitor.monitor import HyperliquidMonitor
+from hyperliquid_monitor.types import Trade
+
+def test_monitor_initialization():
+    addresses = ["0x123..."]
+    monitor = HyperliquidMonitor(addresses)
+    assert monitor.addresses == addresses
+    assert monitor.db is None
+    assert monitor.callback is None
+    assert monitor.silent is False
+
+def test_monitor_with_db(temp_db_path):
+    addresses = ["0x123..."]
+    monitor = HyperliquidMonitor(addresses, db_path=temp_db_path)
+    assert monitor.db is not None
+    assert monitor.db.db_path == temp_db_path
+    assert monitor.silent is False
+
+def test_silent_mode_requires_db():
+    addresses = ["0x123..."]
+    with pytest.raises(ValueError, match="Silent mode requires a database path"):
+        HyperliquidMonitor(addresses, silent=True)
+
+def test_silent_mode_initialization(temp_db_path):
+    addresses = ["0x123..."]
+    callback = Mock()
+    monitor = HyperliquidMonitor(
+        addresses, 
+        db_path=temp_db_path, 
+        callback=callback,
+        silent=True
+    )
+    assert monitor.db is not None
+    assert monitor.callback is None  # Callback should be None in silent mode
+    assert monitor.silent is True
+
+@freeze_time("2023-11-08 15:30:00")
+def test_process_fill(sample_fill_data):
+    monitor = HyperliquidMonitor(["0x123..."])
+    address = "0x123..."
+    
+    trade = monitor._process_fill(sample_fill_data, address)
+    
+    assert isinstance(trade, Trade)
+    assert trade.address == address
+    assert trade.coin == "ETH"
+    assert trade.side == "BUY"  # 'A' should be converted to 'BUY'
+    assert trade.size == 0.5
+    assert trade.price == 1850.5
+    assert trade.trade_type == "FILL"
+    assert trade.direction == "Open Long"
+    assert abs(trade.closed_pnl - 100.25) < 0.001  # Float comparison
+
+@freeze_time("2023-11-08 15:30:00")
+def test_process_order_update(sample_order_data):
+    monitor = HyperliquidMonitor(["0x123..."])
+    address = "0x123..."
+    
+    trades = monitor._process_order_update(sample_order_data, address)
+    
+    assert len(trades) == 1
+    trade = trades[0]
+    assert isinstance(trade, Trade)
+    assert trade.address == address
+    assert trade.coin == "BTC"
+    assert trade.side == "SELL"  # 'B' should be converted to 'SELL'
+    assert trade.size == 0.1
+    assert abs(trade.price - 35000.5) < 0.001
+    assert trade.trade_type == "ORDER_PLACED"
+    assert trade.order_id == 54321
+
+def test_callback_execution(sample_fill_data):
+    mock_callback = Mock()
+    monitor = HyperliquidMonitor(["0x123..."], callback=mock_callback)
+    
+    handler = monitor.create_event_handler("0x123...")
+    event = {"data": {"fills": [sample_fill_data]}}
+    
+    handler(event)
+    
+    assert mock_callback.call_count == 1
+    call_args = mock_callback.call_args[0][0]
+    assert isinstance(call_args, Trade)
+    assert call_args.coin == "ETH"
+    assert abs(call_args.size - 0.5) < 0.001
+
+def test_silent_mode_callback_suppression(sample_fill_data, temp_db_path):
+    mock_callback = Mock()
+    monitor = HyperliquidMonitor(
+        ["0x123..."], 
+        db_path=temp_db_path,
+        callback=mock_callback,
+        silent=True
+    )
+    
+    handler = monitor.create_event_handler("0x123...")
+    event = {"data": {"fills": [sample_fill_data]}}
+    
+    handler(event)
+    
+    # Callback should not be called in silent mode
+    assert mock_callback.call_count == 0
+
+def test_stop_monitor():
+    monitor = HyperliquidMonitor(["0x123..."])
+    assert not monitor._stop_event.is_set()
+    
+    monitor.stop()
+    assert monitor._stop_event.is_set()
+</file>
+
+<file path="tests/test_types.py">
+from datetime import datetime
+import pytest
+from hyperliquid_monitor.types import Trade
+
+def test_trade_creation():
+    trade = Trade(
+        timestamp=datetime(2023, 11, 8, 15, 30),
+        address="0x123...",
+        coin="ETH",
+        side="BUY",
+        size=0.5,
+        price=1850.5,
+        trade_type="FILL"
+    )
+    
+    assert trade.timestamp == datetime(2023, 11, 8, 15, 30)
+    assert trade.address == "0x123..."
+    assert trade.coin == "ETH"
+    assert trade.side == "BUY"
+    assert trade.size == 0.5
+    assert trade.price == 1850.5
+    assert trade.trade_type == "FILL"
+
+def test_trade_optional_fields():
+    trade = Trade(
+        timestamp=datetime(2023, 11, 8, 15, 30),
+        address="0x123...",
+        coin="ETH",
+        side="BUY",
+        size=0.5,
+        price=1850.5,
+        trade_type="FILL",
+        direction="Open Long",
+        tx_hash="0x123...",
+        fee=1.5,
+        fee_token="USDC",
+        start_position=-10.5,
+        closed_pnl=100.25,
+        order_id=12345
+    )
+    
+    assert trade.direction == "Open Long"
+    assert trade.tx_hash == "0x123..."
+    assert trade.fee == 1.5
+    assert trade.fee_token == "USDC"
+    assert trade.start_position == -10.5
+    assert trade.closed_pnl == 100.25
+    assert trade.order_id == 12345
+
+def test_trade_invalid_side():
+    with pytest.raises(ValueError, match="Invalid side"):
+        Trade(
+            timestamp=datetime(2023, 11, 8, 15, 30),
+            address="0x123...",
+            coin="ETH",
+            side="INVALID",  # Should raise ValueError
+            size=0.5,
+            price=1850.5,
+            trade_type="FILL"
+        )
+
+def test_trade_invalid_trade_type():
+    with pytest.raises(ValueError, match="Invalid trade_type"):
+        Trade(
+            timestamp=datetime(2023, 11, 8, 15, 30),
+            address="0x123...",
+            coin="ETH",
+            side="BUY",
+            size=0.5,
+            price=1850.5,
+            trade_type="INVALID"  # Should raise ValueError
+        )
+</file>
+
+<file path=".gitignore">
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+*.log
+*.db
+*.db.backup
+</file>
+
+<file path="LICENSE.md">
+Copyright 2024 Yakitori
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</file>
+
+<file path="pyproject.toml">
+[tool.poetry]
+name = "hyperliquid-monitor"
+version = "0.1.2"
+description = "A Hyperliquid trade monitor package"
+authors = ["Yakitori"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/oni-giri/hyperliquid-monitor"
+repository = "https://github.com/oni-giri/hyperliquid-monitor"
+keywords = ["hyperliquid", "trading", "cryptocurrency", "monitor", "dex"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+packages = [{include = "hyperliquid_monitor", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+hyperliquid-python-sdk = "^0.8.0"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-mock = "^3.12.0"
+pytest-asyncio = "^0.21.1"
+pytest-cov = "^4.1.0"
+freezegun = "^1.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=hyperliquid_monitor --cov-report=term-missing"
+</file>
+
+<file path="README.md">
+![image](./assets/head-image.png)
+
+# Hyperliquid Monitor
+
+A Python package for monitoring trades and orders on Hyperliquid DEX in real-time. This package allows you to track specific addresses and receive notifications when trades are executed or orders are placed/cancelled.
+
+## Features
+
+- Real-time monitoring of trades and orders
+- Support for multiple addresses
+- Optional SQLite database storage
+- Callback system for custom notifications
+- Clean shutdown handling
+- Proper trade type definitions using dataclasses
+
+## Installation
+
+### Using Poetry (recommended)
+
+```bash
+poetry add hyperliquid-monitor
+```
+
+### Using pip
+
+```bash
+pip install hyperliquid-monitor
+```
+
+## Quick Start
+
+### Simple Console Notification
+
+Here's a basic example that monitors an address and prints trades to the console:
+
+```python
+from hyperliquid_monitor import HyperliquidMonitor
+from hyperliquid_monitor.types import Trade
+from datetime import datetime
+
+def print_trade(trade: Trade):
+    """Print trade information to console with colors"""
+    timestamp = trade.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Color codes
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    RESET = '\033[0m'
+    
+    # Choose color based on trade type and side
+    color = GREEN if trade.side == "BUY" else RED
+    
+    print(f"\n{BLUE}[{timestamp}]{RESET} New {trade.trade_type}:")
+    print(f"Address: {trade.address}")
+    print(f"Coin: {trade.coin}")
+    print(f"{color}Side: {trade.side}{RESET}")
+    print(f"Size: {trade.size}")
+    print(f"Price: {trade.price}")
+    
+    if trade.trade_type == "FILL":
+        print(f"Direction: {trade.direction}")
+        if trade.closed_pnl:
+            pnl_color = GREEN if trade.closed_pnl > 0 else RED
+            print(f"PnL: {pnl_color}{trade.closed_pnl:.2f}{RESET}")
+        print(f"Hash: {trade.tx_hash}")
+
+def main():
+    # List of addresses to monitor
+    addresses = [
+        "0x010461C14e146ac35Fe42271BDC1134EE31C703a"  # Example address
+    ]
+
+    # Create monitor with console notifications and optional database
+    monitor = HyperliquidMonitor(
+        addresses=addresses,
+        db_path="trades.db",  # Optional: remove to disable database
+        callback=print_trade
+    )
+
+    try:
+        print("Starting monitor... Press Ctrl+C to exit")
+        monitor.start()
+    except KeyboardInterrupt:
+        monitor.stop()
+
+if __name__ == "__main__":
+    main()
+```
+
+### Trade Object Structure
+
+The `Trade` object contains the following information:
+
+```python
+@dataclass
+class Trade:
+    timestamp: datetime      # When the trade occurred
+    address: str            # The address that made the trade
+    coin: str              # The traded coin/token
+    side: Literal["BUY", "SELL"]  # Trade side
+    size: float            # Trade size
+    price: float           # Trade price
+    trade_type: Literal["FILL", "ORDER_PLACED", "ORDER_CANCELLED"]
+    direction: Optional[str] = None  # e.g., "Open Long", "Close Short"
+    tx_hash: Optional[str] = None    # Transaction hash for fills
+    fee: Optional[float] = None      # Trading fee
+    fee_token: Optional[str] = None  # Fee token (e.g., "USDC")
+    start_position: Optional[float] = None  # Position size before trade
+    closed_pnl: Optional[float] = None     # Realized PnL for closing trades
+    order_id: Optional[int] = None         # Order ID for orders
+```
+
+## Database Storage
+
+If you provide a `db_path`, trades will be stored in an SQLite database with two tables:
+
+### Fills Table
+- timestamp: When the trade occurred
+- address: Trader's address
+- coin: Traded asset
+- side: BUY/SELL
+- size: Trade size
+- price: Trade price
+- direction: Trade direction
+- tx_hash: Transaction hash
+- fee: Trading fee
+- fee_token: Fee token
+- start_position: Position before trade
+- closed_pnl: Realized PnL
+
+### Orders Table
+- timestamp: When the order was placed/cancelled
+- address: Trader's address
+- coin: Asset
+- action: placed/cancelled
+- side: BUY/SELL
+- size: Order size
+- price: Order price
+- order_id: Unique order ID
+
+## Database Recording Modes
+
+The monitor supports different modes of operation for recording trades:
+
+### 1. Full Monitoring with Notifications
+```python
+# Records to database and sends notifications via callback
+monitor = HyperliquidMonitor(
+    addresses=addresses,
+    db_path="trades.db",
+    callback=print_trade
+)
+```
+
+### 2. Silent Database Recording
+```python
+# Only records to database, no notifications
+monitor = HyperliquidMonitor(
+    addresses=addresses,
+    db_path="trades.db",
+    silent=True  # Suppresses all notifications and console output
+)
+```
+
+### 3. Notification-Only Mode
+```python
+# Only sends notifications, no database recording
+monitor = HyperliquidMonitor(
+    addresses=addresses,
+    callback=print_trade
+)
+```
+
+The silent mode is particularly useful for:
+- Background monitoring and data collection
+- Reducing system resource usage
+- Running multiple monitors concurrently
+- Long-term trade data accumulation
+- Server-side deployments where notifications aren't needed
+
+Note: Silent mode requires a database path to be specified since it's meant for data recording.
+
+## Development
+
+### Setting up the Development Environment
+
+1. Clone the repository:
+```bash
+git clone https://github.com/your-username/hyperliquid-monitor.git
+cd hyperliquid-monitor
+```
+
+2. Install poetry if you haven't already:
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+3. Install dependencies:
+```bash
+poetry install
+```
+
+### Running Tests
+
+The package includes a comprehensive test suite using pytest. To run the tests:
+
+```bash
+# Run all tests
+poetry run pytest
+
+# Run with coverage report
+poetry run pytest --cov
+
+# Run specific test file
+poetry run pytest tests/test_monitor.py
+
+# Run tests with output
+poetry run pytest -v
+```
+
+### Test Structure
+
+Tests are organized in the following structure:
+```
+tests/
+├── __init__.py
+├── conftest.py          # Shared fixtures
+├── test_monitor.py      # Monitor tests
+├── test_database.py     # Database tests
+└── test_types.py        # Type validation tests
+```
+
+Key test areas:
+- Monitor functionality (subscriptions, event handling)
+- Database operations (storage, retrieval)
+- Type validation (trade object validation)
+- Event processing (fills, orders)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. Make sure to:
+
+1. Add tests for any new functionality
+2. Update documentation as needed
+3. Follow the existing code style
+4. Run the test suite before submitting
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+Built on top of the official Hyperliquid Python SDK
+</file>
+
+</files>
