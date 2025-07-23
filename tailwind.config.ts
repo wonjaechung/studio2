@@ -10,9 +10,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Space Grotesk', 'sans-serif'],
-        code: ['Source Code Pro', 'monospace'],
+        body: ['Roboto Mono', 'monospace'],
+        headline: ['Orbitron', 'sans-serif'],
+        logo: ['Russo One', 'sans-serif'],
+        code: ['Roboto Mono', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -88,10 +89,25 @@ export default {
             height: '0',
           },
         },
+        'pulse-calm': {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.02)', opacity: '0.9' },
+        },
+        'pulse-tension': {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.05)', opacity: '0.8' },
+        },
+        'flash-red': {
+          '0%, 100%': { backgroundColor: 'hsl(var(--destructive))' },
+          '50%': { backgroundColor: 'hsl(var(--accent))' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'pulse-calm': 'pulse-calm 4s ease-in-out infinite',
+        'pulse-tension': 'pulse-tension 1.5s ease-in-out infinite',
+        'flash-red': 'flash-red 1s ease-in-out infinite',
       },
     },
   },
