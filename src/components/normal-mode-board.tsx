@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Search, PenSquare, MessageSquare } from 'lucide-react';
+import { Search, PenSquare, MessageSquare, TrendingUp, Newspaper } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 const content = {
     en: {
@@ -18,6 +19,12 @@ const content = {
         author: 'Author',
         date: 'Date',
         views: 'Views',
+        popularSearches: 'Popular Searches',
+        news: 'News',
+        all: 'All',
+        defi: 'DeFi',
+        nft: 'NFT',
+        regulation: 'Regulation',
     },
     ko: {
         title: '커뮤니티 게시판',
@@ -29,6 +36,12 @@ const content = {
         author: '작성자',
         date: '작성일',
         views: '조회',
+        popularSearches: '인기 검색어',
+        news: '카테고리별 뉴스',
+        all: '전체',
+        defi: '디파이',
+        nft: 'NFT',
+        regulation: '규제',
     }
 }
 
@@ -42,65 +55,154 @@ const posts = [
   { id: 7, category: '자유', title: '이번 시즌 챌린저 목표로 달립니다', author: '성투가즈아', date: '2023.10.25', views: 456, comments: 33 },
 ];
 
+const popularSearches = {
+    ko: ['솔라나', '비트코인', 'FOMC', '밈코인', '에어드랍', '이더리움'],
+    en: ['Solana', 'Bitcoin', 'FOMC', 'Memecoin', 'Airdrop', 'Ethereum'],
+};
+
+const newsItems = {
+    ko: {
+        all: ['미 연준, 금리 동결 시사... 시장 안도', '이더리움 덴쿤 업그레이드, 가스비 절감 효과 나타나'],
+        defi: ['에이프로토콜, V3 버전 출시하며 유동성 채굴 보상 강화'],
+        nft: ['유명 NFT 프로젝트, 오프라인 갤러리 전시회 개최'],
+        regulation: ['미 SEC, 암호화폐 규제 가이드라인 발표 임박'],
+    },
+    en: {
+        all: ['Fed hints at interest rate freeze, market relieved', 'Ethereum Dencun upgrade shows gas fee reduction effect'],
+        defi: ['Aave Protocol boosts liquidity mining rewards with V3 launch'],
+        nft: ['Famous NFT project holds offline gallery exhibition'],
+        regulation: ['US SEC close to announcing crypto regulation guidelines'],
+    },
+};
+
 export function NormalModeBoard({ lang }: { lang: 'en' | 'ko' }) {
     const currentContent = content[lang];
     const currentPosts = posts.map(p => ({
         ...p,
         category: lang === 'ko' ? p.category : (p.category === '자유' ? 'General' : p.category === '분석' ? 'Analysis' : p.category === '질문' ? 'Question' : p.category === '정보' ? 'Info' : 'Misc')
     }));
+    const currentSearches = popularSearches[lang];
+    const currentNews = newsItems[lang];
 
     return (
-        <Card className="bg-card/30 backdrop-blur-sm border-dashed font-code">
-            <CardHeader>
-                <CardTitle className="font-headline text-2xl">{currentContent.title}</CardTitle>
-                <CardDescription>{currentContent.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex justify-between items-center mb-4">
-                    <div className="relative w-full max-w-sm">
-                        <Input placeholder={currentContent.searchPlaceholder} className="pr-10 bg-black/20" />
-                        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <Button className="bg-accent hover:bg-accent/80 text-accent-foreground">
-                        <PenSquare className="mr-2 h-4 w-4" />
-                        {currentContent.newPost}
-                    </Button>
-                </div>
-                <div className="border rounded-lg">
-                    <Table>
-                        <TableHeader className="bg-muted/30">
-                            <TableRow>
-                                <TableHead className="w-[100px] text-center">{currentContent.category}</TableHead>
-                                <TableHead>{currentContent.titleHeader}</TableHead>
-                                <TableHead className="w-[150px] text-center">{currentContent.author}</TableHead>
-                                <TableHead className="w-[120px] text-center">{currentContent.date}</TableHead>
-                                <TableHead className="w-[80px] text-center">{currentContent.views}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {currentPosts.map((post) => (
-                                <TableRow key={post.id} className="hover:bg-accent/10 cursor-pointer">
-                                    <TableCell className="text-center">
-                                        <Badge variant="outline" className="border-accent/50 text-accent">{post.category}</Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <span>{post.title}</span>
-                                            <span className="text-muted-foreground flex items-center gap-1">
-                                                <MessageSquare className="w-3.5 h-3.5"/>
-                                                {post.comments}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-center text-muted-foreground">{post.author}</TableCell>
-                                    <TableCell className="text-center text-muted-foreground">{post.date}</TableCell>
-                                    <TableCell className="text-center text-muted-foreground">{post.views}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3">
+                <Card className="bg-card/30 backdrop-blur-sm border-dashed font-code h-full">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-2xl">{currentContent.title}</CardTitle>
+                        <CardDescription>{currentContent.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="relative w-full max-w-sm">
+                                <Input placeholder={currentContent.searchPlaceholder} className="pr-10 bg-black/20" />
+                                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            </div>
+                            <Button className="bg-accent hover:bg-accent/80 text-accent-foreground">
+                                <PenSquare className="mr-2 h-4 w-4" />
+                                {currentContent.newPost}
+                            </Button>
+                        </div>
+                        <div className="border rounded-lg">
+                            <Table>
+                                <TableHeader className="bg-muted/30">
+                                    <TableRow>
+                                        <TableHead className="w-[100px] text-center">{currentContent.category}</TableHead>
+                                        <TableHead>{currentContent.titleHeader}</TableHead>
+                                        <TableHead className="w-[150px] text-center">{currentContent.author}</TableHead>
+                                        <TableHead className="w-[120px] text-center">{currentContent.date}</TableHead>
+                                        <TableHead className="w-[80px] text-center">{currentContent.views}</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {currentPosts.map((post) => (
+                                        <TableRow key={post.id} className="hover:bg-accent/10 cursor-pointer">
+                                            <TableCell className="text-center">
+                                                <Badge variant="outline" className="border-accent/50 text-accent">{post.category}</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <span>{post.title}</span>
+                                                    <span className="text-muted-foreground flex items-center gap-1">
+                                                        <MessageSquare className="w-3.5 h-3.5"/>
+                                                        {post.comments}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-center text-muted-foreground">{post.author}</TableCell>
+                                            <TableCell className="text-center text-muted-foreground">{post.date}</TableCell>
+                                            <TableCell className="text-center text-muted-foreground">{post.views}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+                <Card className="bg-card/30 backdrop-blur-sm border-dashed">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-lg flex items-center gap-2">
+                           <TrendingUp className="w-5 h-5" />
+                           {currentContent.popularSearches}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap gap-2">
+                        {currentSearches.map((term, index) => (
+                            <Button key={index} variant="outline" size="sm" className="bg-background/50 hover:bg-accent/20 hover:border-accent/50">
+                                {term}
+                            </Button>
+                        ))}
+                    </CardContent>
+                </Card>
+                <Card className="bg-card/30 backdrop-blur-sm border-dashed">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-lg flex items-center gap-2">
+                           <Newspaper className="w-5 h-5" />
+                           {currentContent.news}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Tabs defaultValue="all" className="w-full">
+                            <TabsList className="grid w-full grid-cols-4 mb-4">
+                                <TabsTrigger value="all">{currentContent.all}</TabsTrigger>
+                                <TabsTrigger value="defi">{currentContent.defi}</TabsTrigger>
+                                <TabsTrigger value="nft">{currentContent.nft}</TabsTrigger>
+                                <TabsTrigger value="regulation">{currentContent.regulation}</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="all">
+                               <ul className="space-y-2 text-sm">
+                                  {currentNews.all.map((item, i) => (
+                                    <li key={i} className="hover:text-accent cursor-pointer truncate">{item}</li>
+                                  ))}
+                               </ul>
+                            </TabsContent>
+                            <TabsContent value="defi">
+                                <ul className="space-y-2 text-sm">
+                                  {currentNews.defi.map((item, i) => (
+                                    <li key={i} className="hover:text-accent cursor-pointer truncate">{item}</li>
+                                  ))}
+                               </ul>
+                            </TabsContent>
+                            <TabsContent value="nft">
+                               <ul className="space-y-2 text-sm">
+                                  {currentNews.nft.map((item, i) => (
+                                    <li key={i} className="hover:text-accent cursor-pointer truncate">{item}</li>
+                                  ))}
+                               </ul>
+                            </TabsContent>
+                             <TabsContent value="regulation">
+                               <ul className="space-y-2 text-sm">
+                                  {currentNews.regulation.map((item, i) => (
+                                    <li key={i} className="hover:text-accent cursor-pointer truncate">{item}</li>
+                                  ))}
+                               </ul>
+                            </TabsContent>
+                        </Tabs>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     );
 }
