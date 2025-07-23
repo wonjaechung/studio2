@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { SiteHeader } from '@/components/layout/site-header';
 
 export const metadata: Metadata = {
   title: 'TradeOS - The e-Sports League for Traders',
@@ -21,8 +20,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;500&family=Russo+One&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
+        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm">
+          <div className="container flex h-14 max-w-screen-2xl items-center">
+            {/* The header content will be managed by the SiteHeader component */}
+          </div>
+        </header>
         <div className="relative flex min-h-screen flex-col">
-          <SiteHeader />
           <div className="flex-1">{children}</div>
         </div>
         <Toaster />
