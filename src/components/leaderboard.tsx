@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -10,13 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { PlayerProfile } from './player-profile';
 import { Crown, Shield, Users } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 const rankedData = [
-  { rank: 1, name: 'Gen.G Esports', league: 'LCK', points: 1617, record: '28-4 (.875)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo GenG', isInternational: true },
-  { rank: 2, name: 'T1', league: 'LCK', points: 1561, record: '21-11 (.656)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo T1', isInternational: true },
-  { rank: 3, name: 'Anyone\'s Legend', league: 'LPL', points: 1558, record: '30-9 (.769)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo AL', isInternational: false },
-  { rank: 4, name: 'Hanwha Life Esports', league: 'LCK', points: 1555, record: '28-8 (.778)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo HLE', isInternational: false },
-  { rank: 5, name: 'BILIBILI GAMING', league: 'LPL', points: 1492, record: '28-13 (.683)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo BLG', isInternational: true },
+  { rank: 1, name: 'Gen.G Esports', league: 'LCK', points: 1617, record: '28-4 (.875)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo GenG', isInternational: true, trend: [{v: 1580}, {v: 1595}, {v: 1590}, {v: 1605}, {v: 1617}] },
+  { rank: 2, name: 'T1', league: 'LCK', points: 1561, record: '21-11 (.656)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo T1', isInternational: true, trend: [{v: 1550}, {v: 1545}, {v: 1555}, {v: 1565}, {v: 1561}] },
+  { rank: 3, name: 'Anyone\'s Legend', league: 'LPL', points: 1558, record: '30-9 (.769)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo AL', isInternational: false, trend: [{v: 1520}, {v: 1530}, {v: 1545}, {v: 1550}, {v: 1558}] },
+  { rank: 4, name: 'Hanwha Life Esports', league: 'LCK', points: 1555, record: '28-8 (.778)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo HLE', isInternational: false, trend: [{v: 1560}, {v: 1550}, {v: 1540}, {v: 1545}, {v: 1555}] },
+  { rank: 5, name: 'BILIBILI GAMING', league: 'LPL', points: 1492, record: '28-13 (.683)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo BLG', isInternational: true, trend: [{v: 1480}, {v: 1485}, {v: 1495}, {v: 1490}, {v: 1492}] },
 ];
 
 const normalData = [
@@ -63,6 +65,7 @@ export function Leaderboard() {
                         <TableRow>
                         <TableHead className="w-16 text-center">#</TableHead>
                         <TableHead>Team</TableHead>
+                        <TableHead className="w-32 text-center">Trend</TableHead>
                         <TableHead className="text-right">Points</TableHead>
                         <TableHead className="text-center">W/L</TableHead>
                         <TableHead className="text-center">International</TableHead>
@@ -83,6 +86,15 @@ export function Leaderboard() {
                                     <p className="text-xs text-muted-foreground">{player.league}</p>
                                 </div>
                             </div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="h-8 w-24 mx-auto">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={player.trend} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                                    <Bar dataKey="v" fill={player.trend[player.trend.length-1].v > player.trend[0].v ? 'hsl(var(--chart-2))' : 'hsl(var(--chart-1))'} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                                </div>
                             </TableCell>
                             <TableCell className="text-right font-mono font-bold text-accent">{player.points} pts</TableCell>
                             <TableCell className="text-center font-mono">{player.record}</TableCell>

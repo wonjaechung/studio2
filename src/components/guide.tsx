@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Activity, Gamepad2, Swords, Trophy, Users, Video, SlidersHorizontal, BarChart2, DollarSign, Bitcoin, Waves, Info, Newspaper, BookOpen } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { VolatilityGauge } from './volatility-gauge';
+import { Button } from './ui/button';
 
 const content = {
   en: {

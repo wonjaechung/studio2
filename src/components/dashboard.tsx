@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
@@ -71,11 +72,11 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
     switch (activeView) {
       case 'ranked':
         return (
-           <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-            <div className="xl:col-span-3 space-y-6">
+           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="xl:col-span-2 space-y-8">
                <TradingViewChart />
             </div>
-            <div className="xl:col-span-2 space-y-6">
+            <div className="xl:col-span-1 space-y-8">
               <VolatilityGauge lang={lang} />
               <CommunityChat />
             </div>
@@ -86,7 +87,7 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
       case 'guide':
         return <Guide lang={lang} />;
       case 'leaderboard':
-        return <Leaderboard lang={lang}/>;
+        return <Leaderboard />;
       case 'liquidations':
         return <LiquidationTracker />;
       case 'hyperliquid':
@@ -123,7 +124,7 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
                     isActive={activeView === item.view}
                     size="lg"
                   >
-                    <item.icon className="w-6 h-6" />
+                    <item.icon className="w-5 h-5" />
                     <span className="text-base">{item.name}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -143,10 +144,10 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
           <main className="p-4 sm:p-6 lg:p-8">
              <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-headline text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-accent to-blue-400">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-accent to-blue-400">
                   {content[lang].title}
                 </h1>
-                <p className="mt-2 text-lg text-muted-foreground font-body">
+                <p className="mt-2 text-base text-muted-foreground font-body">
                   {content[lang].subtitle}
                 </p>
               </div>
