@@ -14,9 +14,11 @@ import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { TradingViewChart } from './trading-view-chart';
 import { CommunityChat } from './community-chat';
+import { NormalModeBoard } from './normal-mode-board';
 
 const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
+  { name: lang === 'ko' ? '일반 모드' : 'Normal Mode', icon: Gamepad2, view: 'normal' },
   { name: lang === 'ko' ? '게임 방법' : 'How to Play', icon: BookUser, view: 'guide' },
   { name: lang === 'ko' ? '리더보드' : 'Leaderboard', icon: ShieldCheck, view: 'leaderboard' },
   { name: lang === 'ko' ? '청산' : 'Liquidations', icon: Radio, view: 'liquidations' },
@@ -68,6 +70,8 @@ export function Dashboard() {
             </div>
           </div>
         );
+      case 'normal':
+        return <NormalModeBoard lang={language} />;
       case 'guide':
         return <Guide lang={language} />;
       case 'liquidations':
