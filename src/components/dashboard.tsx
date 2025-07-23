@@ -1,12 +1,13 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Database, Code, Wand2, Users, BotMessageSquare, Settings, Fish, Waves } from 'lucide-react';
+import { Database, Code, Wand2, Users, BotMessageSquare, Settings, Fish, Waves, Flame } from 'lucide-react';
 import { useState } from 'react';
 import { AISummarizer } from './ai-summarizer';
 import { DatasetTables } from './dataset-tables';
 import { WhaleWatch } from './whale-watch';
 import { HyperliquidTracker } from './hyperliquid-tracker';
+import { LiquidationTracker } from './liquidation-tracker';
 
 const navItems = [
   { name: 'Raw Data', icon: Database, view: 'raw' },
@@ -14,6 +15,7 @@ const navItems = [
   { name: 'Spells', icon: Wand2, view: 'spells' },
   { name: 'Whale Watch', icon: Fish, view: 'whale' },
   { name: 'Hyperliquid', icon: Waves, view: 'hyperliquid' },
+  { name: 'Liquidations', icon: Flame, view: 'liquidations' },
   { name: 'Community', icon: Users, view: 'community' },
 ];
 
@@ -70,6 +72,13 @@ export function Dashboard() {
             </div>
 
             <div className="space-y-12">
+               <section id="liquidation-tracker">
+                 <h2 className="text-2xl font-headline font-semibold tracking-tight mb-4 flex items-center gap-2">
+                   <Flame className="w-6 h-6 text-accent"/> Total Liquidations
+                 </h2>
+                 <LiquidationTracker />
+              </section>
+              
               <section id="hyperliquid-tracker">
                  <h2 className="text-2xl font-headline font-semibold tracking-tight mb-4 flex items-center gap-2">
                    <Waves className="w-6 h-6 text-accent"/> Hyperliquid Whale Tracker
