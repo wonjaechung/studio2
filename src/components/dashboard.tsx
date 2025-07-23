@@ -2,7 +2,7 @@
 'use client';
 
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare, Users } from 'lucide-react';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare, Users, Waves } from 'lucide-react';
 import { useState } from 'react';
 import { Guide } from './guide';
 import { LiquidationTracker } from './liquidation-tracker';
@@ -18,6 +18,7 @@ import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { UserNav } from './user-nav';
+import { VolatilityGauge } from './volatility-gauge';
 
 const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
@@ -25,7 +26,7 @@ const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '게임 방법' : 'How to Play', icon: BookUser, view: 'guide' },
   { name: lang === 'ko' ? '리더보드' : 'Leaderboard', icon: ShieldCheck, view: 'leaderboard' },
   { name: lang === 'ko' ? '청산' : 'Liquidations', icon: Radio, view: 'liquidations' },
-  { name: lang === 'ko' ? '하이퍼리퀴드' : 'Hyperliquid', icon: History, view: 'hyperliquid' },
+  { name: lang === 'ko' ? '고래 분석' : 'Whale Analysis', icon: Waves, view: 'hyperliquid' },
   { name: lang === 'ko' ? 'AI 분석' : 'AI Analysis', icon: BotMessageSquare, view: 'ai' },
   { name: lang === 'ko' ? '데이터셋' : 'Datasets', icon: Database, view: 'data' },
 ];
@@ -71,10 +72,11 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
       case 'ranked':
         return (
            <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-            <div className="xl:col-span-4">
+            <div className="xl:col-span-3 space-y-6">
                <TradingViewChart />
             </div>
-            <div className="xl:col-span-1 space-y-6">
+            <div className="xl:col-span-2 space-y-6">
+              <VolatilityGauge lang={lang} />
               <CommunityChat />
             </div>
           </div>
@@ -108,8 +110,8 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
         <Sidebar className="hidden lg:flex flex-col">
           <SidebarHeader>
              <a href="#" className="flex items-center space-x-2">
-                <GanttChartSquare className="h-6 w-6 text-accent" />
-                <span className="font-bold font-logo text-lg tracking-wider">TradeOS</span>
+                <GanttChartSquare className="h-8 w-8 text-accent" />
+                <span className="font-bold font-logo text-2xl tracking-wider">TradeOS</span>
             </a>
           </SidebarHeader>
           <SidebarContent className="flex-1">
@@ -119,6 +121,7 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
                   <SidebarMenuButton
                     onClick={() => setActiveView(item.view)}
                     isActive={activeView === item.view}
+                    size="lg"
                   >
                     <item.icon className="w-5 h-5" />
                     {item.name}

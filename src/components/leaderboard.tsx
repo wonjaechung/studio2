@@ -12,11 +12,11 @@ import { Crown, Shield, Users } from 'lucide-react';
 import { Badge } from './ui/badge';
 
 const rankedData = [
-  { rank: 1, name: 'Gen.G Esports', league: 'LCK', points: 1617, record: '28-4 (.875)', avatar: 'https://placehold.co/40x40/FFD700/000000', dataAiHint: 'esports logo GenG' },
-  { rank: 2, name: 'T1', league: 'LCK', points: 1561, record: '21-11 (.656)', avatar: 'https://placehold.co/40x40/E5002B/FFFFFF', dataAiHint: 'esports logo T1' },
-  { rank: 3, name: 'Anyone\'s Legend', league: 'LPL', points: 1558, record: '30-9 (.769)', avatar: 'https://placehold.co/40x40/333333/FFFFFF', dataAiHint: 'esports logo AL' },
-  { rank: 4, name: 'Hanwha Life Esports', league: 'LCK', points: 1555, record: '28-8 (.778)', avatar: 'https://placehold.co/40x40/FF6B00/FFFFFF', dataAiHint: 'esports logo HLE' },
-  { rank: 5, name: 'BILIBILI GAMING', league: 'LPL', points: 1492, record: '28-13 (.683)', avatar: 'https://placehold.co/40x40/00A1F1/FFFFFF', dataAiHint: 'esports logo BLG' },
+  { rank: 1, name: 'Gen.G Esports', league: 'LCK', points: 1617, record: '28-4 (.875)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo GenG', isInternational: true },
+  { rank: 2, name: 'T1', league: 'LCK', points: 1561, record: '21-11 (.656)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo T1', isInternational: true },
+  { rank: 3, name: 'Anyone\'s Legend', league: 'LPL', points: 1558, record: '30-9 (.769)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo AL', isInternational: false },
+  { rank: 4, name: 'Hanwha Life Esports', league: 'LCK', points: 1555, record: '28-8 (.778)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo HLE', isInternational: false },
+  { rank: 5, name: 'BILIBILI GAMING', league: 'LPL', points: 1492, record: '28-13 (.683)', avatar: 'https://placehold.co/40x40.png', dataAiHint: 'esports logo BLG', isInternational: true },
 ];
 
 const normalData = [
@@ -70,7 +70,7 @@ export function Leaderboard() {
                     </TableHeader>
                     <TableBody>
                         {rankedData.map((player) => (
-                        <TableRow key={player.rank} className="cursor-pointer hover:bg-muted/30" onClick={() => {}}>
+                        <TableRow key={player.rank} className="cursor-pointer hover:bg-muted/30" onClick={() => setSelectedAddress(player.name)}>
                             <TableCell className="font-bold text-lg text-center">{player.rank}</TableCell>
                             <TableCell>
                             <div className="flex items-center gap-3">
@@ -87,11 +87,13 @@ export function Leaderboard() {
                             <TableCell className="text-right font-mono font-bold text-accent">{player.points} pts</TableCell>
                             <TableCell className="text-center font-mono">{player.record}</TableCell>
                             <TableCell className="text-center">
-                                <div className="flex justify-center gap-2">
-                                    <Badge variant="outline" className="border-yellow-400/50 text-yellow-300">
-                                        <Crown className="w-4 h-4 mr-1"/> {player.rank}st
-                                    </Badge>
-                                </div>
+                                {player.isInternational && (
+                                  <div className="flex justify-center gap-2">
+                                      <Badge variant="outline" className="border-yellow-400/50 text-yellow-300">
+                                          <Crown className="w-4 h-4 mr-1"/> Worlds
+                                      </Badge>
+                                  </div>
+                                )}
                             </TableCell>
                         </TableRow>
                         ))}
@@ -117,7 +119,7 @@ export function Leaderboard() {
                             </TableHeader>
                             <TableBody>
                             {normalData.map((player) => (
-                                <TableRow key={player.rank} onClick={() => setSelectedAddress(player.address)} className="cursor-pointer">
+                                <TableRow key={player.rank} onClick={() => setSelectedAddress(player.address)} className="cursor-pointer hover:bg-muted/30">
                                     <TableCell>{player.rank}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">

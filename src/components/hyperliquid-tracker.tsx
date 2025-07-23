@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useState } from 'react';
+import { PlayerProfile } from './player-profile';
 
 
 const whaleTrades = [
@@ -60,6 +62,19 @@ const whaleTrades = [
 ];
 
 export function HyperliquidTracker() {
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+
+  if (selectedAddress) {
+      return (
+          <div>
+              <Button onClick={() => setSelectedAddress(null)} className="mb-4">
+                  &larr; Back to Whale Analysis
+              </Button>
+              <PlayerProfile />
+          </div>
+      );
+  }
+
   return (
     <Card className="bg-card/50 backdrop-blur-sm border-dashed">
         <CardHeader>
@@ -77,7 +92,7 @@ export function HyperliquidTracker() {
             </div>
             <div className="space-y-4">
                 {whaleTrades.map((tx, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-colors">
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => setSelectedAddress(tx.address)}>
                     <div className="flex items-center gap-4">
                         <Avatar>
                         <AvatarImage src={tx.logo} data-ai-hint={tx.dataAiHint} />
@@ -108,4 +123,3 @@ export function HyperliquidTracker() {
     </Card>
   );
 }
-

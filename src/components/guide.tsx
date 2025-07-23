@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Activity, Gamepad2, Swords, Trophy, Users, Video, SlidersHorizontal, BarChart2, DollarSign, Bitcoin, Waves, Info } from 'lucide-react';
+import { Activity, Gamepad2, Swords, Trophy, Users, Video, SlidersHorizontal, BarChart2, DollarSign, Bitcoin, Waves, Info, Newspaper } from 'lucide-react';
 import { Separator } from './ui/separator';
 
 const content = {
@@ -13,7 +13,10 @@ const content = {
     gaugeDescription: 'This is TradeOS\'s proprietary on-chart indicator that quantifies the psychological state of market participants—fear and greed—by synthesizing various data points and displaying them visually on the chart.',
     logicTitle: 'Key Calculation Logic',
     logicDescription: 'The F&G index is calculated comprehensively by normalizing the five main indicators below and applying user-defined weights.',
-    announcementsTitle: 'Announcements & API Guide'
+    announcementsTitle: 'Announcements & API Guide',
+    whitePaper: 'White Paper',
+    announcements: 'Announcements',
+    apiGuide: 'API Guide',
   },
   ko: {
     mainTitle: 'TradeOS: 게임 방법',
@@ -22,7 +25,10 @@ const content = {
     gaugeDescription: '이 지표는 여러 데이터를 종합하여 시장 참여자들의 심리 상태, 즉 공포(Fear)와 탐욕(Greed)을 계량화하여 차트 위에 직접 시각적으로 표시해주는 TradeOS의 독자적인 온차트(On-Chart) 지표입니다.',
     logicTitle: '주요 계산 로직',
     logicDescription: 'F&G 지수는 아래 5가지 주요 지표를 정규화하고, 사용자 설정 가중치를 적용하여 종합적으로 계산됩니다.',
-    announcementsTitle: '공지사항 & API 가이드'
+    announcementsTitle: '공지사항 & API 가이드',
+    whitePaper: '백서',
+    announcements: '공지사항',
+    apiGuide: 'API 가이드',
   },
 };
 
@@ -106,10 +112,14 @@ export function Guide({ lang }: { lang: 'en' | 'ko' }) {
             </div>
              <div className="space-y-8">
                 <Card className="bg-card/50 backdrop-blur-sm border-dashed p-6">
-                    <h3 className="font-headline text-2xl mb-4 text-accent">{currentContent.announcementsTitle}</h3>
+                    <h3 className="font-headline text-2xl mb-4 text-accent flex items-center gap-2">
+                      <Newspaper className="w-6 h-6" />
+                      {currentContent.announcementsTitle}
+                    </h3>
                     <ul className="space-y-3 text-muted-foreground">
+                        <li className="hover:text-foreground cursor-pointer font-semibold text-foreground/90">[White Paper] TradeOS Protocol v1.2</li>
                         <li className="hover:text-foreground cursor-pointer">[Update] v1.2 Patch Notes - New MMR calculation</li>
-                        <li className="hover:text-foreground cursor-pointer">[Guide] How to connect to the MCP API</li>
+                        <li className="hover:text-foreground cursor-pointer">[API] How to connect to the MCP API</li>
                         <li className="hover:text-foreground cursor-pointer">[Event] Season 3 start date announced!</li>
                         <li className="hover:text-foreground cursor-pointer">[System] Scheduled maintenance on 2024-08-01</li>
                     </ul>
@@ -119,17 +129,17 @@ export function Guide({ lang }: { lang: 'en' | 'ko' }) {
 
         <Separator className="my-16" />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="space-y-8">
             <div>
-                 <h2 className="text-4xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-accent to-purple-400">
+                 <h2 className="text-4xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-accent to-purple-400 mb-4">
                     {currentContent.gaugeTitle}
                 </h2>
-                <p className="mt-4 text-lg text-muted-foreground max-w-xl">
+                <p className="mt-4 text-lg text-muted-foreground max-w-2xl">
                     {currentContent.gaugeDescription}
                 </p>
             </div>
-             <div>
-                <Card className="bg-card/50 backdrop-blur-sm p-6">
+            <div>
+                <Card className="bg-card/50 backdrop-blur-sm p-6 max-w-2xl">
                    <h3 className="font-headline text-2xl mb-4 text-accent">{currentContent.logicTitle}</h3>
                    <p className="text-muted-foreground mb-6">
                         {currentContent.logicDescription}
