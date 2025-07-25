@@ -165,7 +165,7 @@ export function Leaderboard() {
                    <div className="font-semibold text-foreground">Team Match Result Points</div>
                    <p>⚔️ Opponent's Strength: Power score difference</p>
                    <p>📈 Win Score Difference: Match win/loss</p>
-                   <p>💥 Upset Bonus: e.g., Worlds Playoffs > Regular Season</p>
+                   <p>💥 Upset Bonus: e.g., Worlds Playoffs &gt; Regular Season</p>
                 </div>
                  <div className="space-y-2 border-t border-border pt-4">
                     <div className="font-semibold text-foreground">Regional League Power</div>
