@@ -1,10 +1,8 @@
-
-
 'use client';
 
 import React, { useState } from 'react';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, Users, Waves, Newspaper, Home } from 'lucide-react';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, Users, Waves, Newspaper, Home, LayoutDashboard, Swords, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -22,10 +20,12 @@ import { RankedModeBoard } from './ranked-mode-board';
 import { Leaderboard } from './leaderboard';
 import { AuthModal } from './auth-modal';
 import { HomePage } from './home-page';
+import { MyDashboard } from './my-dashboard';
 
 
 const navItems = (lang: 'en' | 'ko') => [
   { name: lang === 'ko' ? '홈' : 'Home', icon: Home, view: 'home' },
+  { name: lang === 'ko' ? '내 대시보드' : 'My Dashboard', icon: LayoutDashboard, view: 'my-dashboard' },
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
   { name: lang === 'ko' ? '일반 모드' : 'Normal Mode', icon: Gamepad2, view: 'normal' },
   { name: lang === 'ko' ? '게임 방법' : 'How to Play', icon: BookUser, view: 'guide' },
@@ -76,6 +76,8 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
     switch (activeView) {
       case 'home':
         return <HomePage lang={lang} />;
+      case 'my-dashboard':
+        return <MyDashboard lang={lang} />;
       case 'ranked':
         return <RankedModeBoard lang={lang} />;
       case 'normal':
