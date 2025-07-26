@@ -104,6 +104,10 @@ export default {
         'pulse-glow': {
           '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
           '50%': { opacity: '1', transform: 'scale(1.02)' },
+        },
+        "progress": {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
         }
       },
       animation: {
@@ -113,6 +117,7 @@ export default {
         'pulse-tension': 'pulse-tension 1.5s ease-in-out infinite',
         'flash-red': 'flash-red 1s ease-in-out infinite',
         'pulse-glow': 'pulse-glow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        "progress": "progress var(--animation-duration, 8s) linear forwards",
       },
     },
   },

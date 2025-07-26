@@ -10,6 +10,7 @@ import { Trophy, TrendingUp, TrendingDown, Target, Zap, Shield, AlertTriangle, S
 import { TradingViewChart } from '@/components/trading-view-chart';
 import { VolatilityGauge } from '@/components/volatility-gauge';
 import { ApiConnectionStatus } from '@/components/api-connection-status';
+import { AchievementSystem } from "./achievement-system"
 
 interface TradingStats {
   totalTrades: number;
@@ -187,80 +188,18 @@ export function RankedModeBoard({ lang }: { lang: 'en' | 'ko' }) {
       </div>
 
       {/* Bottom Section - Detailed Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Trades - Trading History */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <History className="w-5 h-5" />
-              최근 거래
-            </CardTitle>
+            <CardTitle>Recent Trades</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {recentTrades.map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div>
-                    <p className="font-medium">{trade.symbol}</p>
-                    <p className="text-sm text-muted-foreground">{trade.time}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-medium ${trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      ${trade.pnl.toLocaleString()}
-                    </p>
-                    <Badge variant={trade.type === 'buy' ? 'default' : 'secondary'} className="text-xs">
-                      {trade.type.toUpperCase()}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Content for Recent Trades */}
           </CardContent>
         </Card>
-
-        {/* Achievements - Gamification */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="w-5 h-5" />
-              업적 시스템
-            </CardTitle>
-            <CardDescription>
-              거래 성과에 따른 업적을 달성하세요
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-3">
-              {achievements.map((achievement) => (
-                <div
-                  key={achievement.id}
-                  className={`p-3 rounded-lg border ${
-                    achievement.unlocked ? 'bg-accent/10 border-accent' : 'bg-muted/50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
-                      achievement.unlocked ? 'bg-accent text-accent-foreground' : 'bg-muted'
-                    }`}>
-                      {achievement.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{achievement.name}</h4>
-                      <p className="text-xs text-muted-foreground">{achievement.description}</p>
-                      <div className="mt-2">
-                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                          <span>진행도</span>
-                          <span>{achievement.progress}/{achievement.maxProgress}</span>
-                        </div>
-                        <Progress value={(achievement.progress / achievement.maxProgress) * 100} className="h-1" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-2">
+          <AchievementSystem lang={lang} />
+        </div>
       </div>
     </div>
   );
