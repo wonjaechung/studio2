@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { SiteHeader } from '@/components/layout/site-header';
 
 export const metadata: Metadata = {
-  title: 'TradeOS - The e-Sports League for Traders',
+  title: 'Coinmap - The e-Sports League for Traders',
   description: 'Your AI-powered portal to the blockchain.',
 };
 

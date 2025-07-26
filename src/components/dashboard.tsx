@@ -2,9 +2,14 @@
 
 'use client';
 
-import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarFooter } from '@/components/ui/sidebar';
-import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, GanttChartSquare, Users, Waves, Newspaper } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Gamepad2, ShieldCheck, Trophy, History, Radio, BotMessageSquare, BookUser, Languages, Database, Users, Waves, Newspaper, Home } from 'lucide-react';
+import { Button } from './ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { UserNav } from './user-nav';
+import { VolatilityGauge } from './volatility-gauge';
 import { Guide } from './guide';
 import { LiquidationTracker } from './liquidation-tracker';
 import { HyperliquidTracker } from './hyperliquid-tracker';
@@ -13,15 +18,14 @@ import { DatasetTables } from './dataset-tables';
 import { TradingViewChart } from './trading-view-chart';
 import { CommunityChat } from './community-chat';
 import { NormalModeBoard } from './normal-mode-board';
+import { RankedModeBoard } from './ranked-mode-board';
 import { Leaderboard } from './leaderboard';
 import { AuthModal } from './auth-modal';
-import { Button } from './ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { UserNav } from './user-nav';
-import { VolatilityGauge } from './volatility-gauge';
+import { HomePage } from './home-page';
+
 
 const navItems = (lang: 'en' | 'ko') => [
+  { name: lang === 'ko' ? '홈' : 'Home', icon: Home, view: 'home' },
   { name: lang === 'ko' ? '랭크 모드' : 'Ranked Mode', icon: Trophy, view: 'ranked' },
   { name: lang === 'ko' ? '일반 모드' : 'Normal Mode', icon: Gamepad2, view: 'normal' },
   { name: lang === 'ko' ? '게임 방법' : 'How to Play', icon: BookUser, view: 'guide' },
@@ -48,7 +52,7 @@ const content = {
 }
 
 export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
-  const [activeView, setActiveView] = useState('ranked');
+  const [activeView, setActiveView] = useState('home');
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
@@ -70,18 +74,10 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
 
   const renderContent = () => {
     switch (activeView) {
+      case 'home':
+        return <HomePage lang={lang} />;
       case 'ranked':
-        return (
-           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            <div className="xl:col-span-2 space-y-8">
-               <TradingViewChart />
-            </div>
-            <div className="xl:col-span-1 space-y-8">
-              <VolatilityGauge lang={lang} />
-              <CommunityChat />
-            </div>
-          </div>
-        );
+        return <RankedModeBoard lang={lang} />;
       case 'normal':
         return <NormalModeBoard lang={lang} />;
       case 'guide':
@@ -111,8 +107,12 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
         <Sidebar className="hidden lg:flex flex-col">
           <SidebarHeader>
              <a href="#" className="flex items-center space-x-2">
-                <GanttChartSquare className="h-10 w-10 text-accent" />
-                <span className="font-bold font-logo text-3xl tracking-wider">TradeOS</span>
+                <svg width="40" height="40" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10">
+                  <circle cx="23" cy="23" r="23" fill="hsl(228 12% 10%)"/>
+                  <path d="M23 10C17.4772 10 13 14.4772 13 20C13 27.5 23 36 23 36C23 36 33 27.5 33 20C33 14.4772 28.5228 10 23 10ZM23 24C20.7909 24 19 22.2091 19 20C19 17.7909 20.7909 16 23 16C25.2091 16 27 17.7909 27 20C27 22.2091 25.2091 24 23 24Z" fill="#00A8C6"/>
+                  <circle cx="23" cy="20" r="4" fill="hsl(228 12% 10%)"/>
+                </svg>
+                <span className="font-bold font-logo text-3xl tracking-wider">Coinmap</span>
             </a>
           </SidebarHeader>
           <SidebarContent className="flex-1">
@@ -141,22 +141,18 @@ export function Dashboard({ lang }: { lang: 'en' | 'ko' }) {
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
-          <main className="p-4 sm:p-6 lg:p-8">
-             <div className="flex items-center justify-between mb-8">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-headline text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-accent to-blue-400">
-                  {content[lang].title}
-                </h1>
-                <p className="mt-2 text-base text-muted-foreground font-body">
-                  {content[lang].subtitle}
-                </p>
-              </div>
+          <main className={activeView === 'home' ? 'relative' : 'relative p-4 sm:p-6 lg:p-8'}>
+             <div className={activeView === 'home' ? 'absolute top-4 right-4 z-50' : 'flex items-center justify-end mb-8'}>
                 <SidebarTrigger className="lg:hidden" />
             </div>
 
-            <div className="space-y-12">
-               {renderContent()}
-            </div>
+            {activeView === 'home' ? (
+              renderContent()
+            ) : (
+              <div className="space-y-12">
+                {renderContent()}
+              </div>
+            )}
           </main>
         </SidebarInset>
       </div>

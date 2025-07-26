@@ -100,6 +100,10 @@ export default {
         'flash-red': {
           '0%, 100%': { backgroundColor: 'hsl(var(--destructive))' },
           '50%': { backgroundColor: 'hsl(var(--accent))' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '0.5', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.02)' },
         }
       },
       animation: {
@@ -108,6 +112,7 @@ export default {
         'pulse-calm': 'pulse-calm 4s ease-in-out infinite',
         'pulse-tension': 'pulse-tension 1.5s ease-in-out infinite',
         'flash-red': 'flash-red 1s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

@@ -9,10 +9,10 @@ import { Button } from './ui/button';
 
 const content = {
   en: {
-    mainTitle: 'TradeOS: How to Play',
+    mainTitle: 'Coinmap: How to Play',
     mainDescription: 'Welcome to the e-Sports League! This is where you become the player.',
     gaugeTitle: 'What is the Volatility Gauge?',
-    gaugeDescription: 'This is TradeOS\'s proprietary on-chart indicator that quantifies the psychological state of market participants—fear and greed—by synthesizing various data points and displaying them visually on the chart.',
+    gaugeDescription: 'This is Coinmap\'s proprietary on-chart indicator that quantifies the psychological state of market participants—fear and greed—by synthesizing various data points and displaying them visually on the chart.',
     logicTitle: 'Key Calculation Logic',
     logicDescription: 'The F&G index is calculated comprehensively by normalizing the five main indicators below and applying user-defined weights.',
     announcementsTitle: 'Announcements & API Guide',
